@@ -1,0 +1,35 @@
+Autotest: Begin at Tue Mar 16 21:06:02 CST 2021
+[32m[ You have passed bash testcase3 1/2 ][0m
+[32m[ You have passed bash testcase3 2/2 ][0m
+[32m[ File1~40 all exist.You have passed bash testcase5 1/3 ][0m
+[32m[ Newfile41~70 all exist.You have passed bash testcase5 2/3 ][0m
+[32m[ File41~100 don't exist.You have passed bash testcase5 3/3 ][0m
+[32m[ You have passed bash testcase6 1/2 ][0m
+[32m[ You have passed bash testcase6 2/2 ][0m
+[32m[ You have passed bash testcase7 1/2 ][0m
+[32m[ You have passed bash testcase7 2/2 ][0m
+[32m[ Makefile found.You hace passed testcase4 ][0m
+gcc palindrome.c -o palindrome 
+[32m[ palindrome found. You hace passed testcase2. ][0m
+[32m[ You have passed palindrome testcase1 1/3 ][0m
+[32m[ You have passed palindrome testcase1 2/3 ][0m
+[32m[ You have passed palindrome testcase1 3/3 ][0m
+[33m[01m[ Start to testcase8 ][0m
+[32m[ Makefile found. ][0m
+cd code && make
+make[1]: Entering directory '/usr/src/workdir/code'
+gcc -c fibo.c -I../include
+gcc -c main.c -I../include
+make[1]: Leaving directory '/usr/src/workdir/code'
+gcc code/main.o code/fibo.o -o fibo
+[32m[ fibo found. ][0m
+[32m[ You have passed fibo testcase 1/2 ][0m
+[32m[ You have passed fibo testcase 2/2 ][0m
+[32m[ find your fibo.o ][0m
+[32m[ find your main.o ][0m
+rm code/main.o
+rm code/fibo.o
+[32m[ make clean can delete fibo.o ][0m
+[32m[ make clean can delete main.o ][0m
+[32m[ find your fibo after make clean ][0m
+[33m[01m[ You got 100 (of 100) this time. Tue Mar 16 21:06:17 CST 2021 ][0m
