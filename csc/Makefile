@@ -5,4 +5,4 @@ fibo:
 .PHONY: clean
 clean:
 	rm fibo
-	rm code/fibo.o
+	rm code/main.o
