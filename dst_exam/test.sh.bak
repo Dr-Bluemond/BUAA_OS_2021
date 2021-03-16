@@ -1,9 +1,0 @@
-#!bin/bash
-a=0
-while [ $a -le 5 ]
-do
-	b=0
-	while [ $b -le 5]
-		grep -n 'hello OS lab0' dir/dir$a/lab0_$b 
-	a=$[$a+1]
-done
