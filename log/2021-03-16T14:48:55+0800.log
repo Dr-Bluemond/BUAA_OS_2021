@@ -1,0 +1,11 @@
+Autotest: Begin at Tue Mar 16 14:48:55 CST 2021
+[32m[ test.sh found. ][0m
+[32m[ lab0_exam.c found. ][0m
+[32m[ You have passed Task 1 (test.sh script). ][0m
+[32m[ Makefile found. ][0m
+make: 'fibo' is up to date.
+[32m[ make fibo successfully. ][0m
+[32m[ You have passed fibo testcase 1/2. ][0m
+[32m[ You have passed fibo testcase 2/2. ][0m
+[31m[01m[ fibo.o not found. ][0m
+[33m[01m[ You got 70 (of 100) this time. Tue Mar 16 14:49:10 CST 2021 ][0m
