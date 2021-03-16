@@ -1,0 +1,22 @@
+Autotest: Begin at Tue Mar 16 14:50:43 CST 2021
+[32m[ test.sh found. ][0m
+[32m[ lab0_exam.c found. ][0m
+[32m[ You have passed Task 1 (test.sh script). ][0m
+[32m[ Makefile found. ][0m
+cd code && make
+make[1]: Entering directory '/usr/src/workdir/code'
+gcc -c fibo.c -I../include
+gcc -c main.c -I../include
+make[1]: Leaving directory '/usr/src/workdir/code'
+gcc code/main.o code/fibo.o -o fibo
+[32m[ make fibo successfully. ][0m
+[32m[ You have passed fibo testcase 1/2. ][0m
+[32m[ You have passed fibo testcase 2/2. ][0m
+[32m[ fibo.o found. ][0m
+[32m[ main.o found. ][0m
+rm fibo
+rm code/main.o
+[32m[ fibo.o found. ][0m
+[32m[ make clean can delete main.o. ][0m
+[32m[ make clean can delete fibo. ][0m
+[33m[01m[ You got 100 (of 100) this time. Tue Mar 16 14:51:04 CST 2021 ][0m
