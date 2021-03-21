@@ -47,6 +47,6 @@ clean:
 .PHONY: run
 
 run:
-	gxemul -E testmips -C R3000 -M 64 gxemul/vmlinux
+	/OSLAB/gxemul -E testmips -C R3000 -M 64 gxemul/vmlinux
 
 include include.mk
