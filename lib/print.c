@@ -88,25 +88,20 @@ void lp_Print(void (*output)(void *, char *, int),
 
 		/* check for other prefixes */
 		/* check for flag */
+		ladjust = 0;
+		padc = ' ';
 		if (*fmt == '-') {
 			ladjust = 1;
 			fmt++;
-		} else {
-			ladjust = 0;
 		}
 		if (*fmt == '0') {
 			padc = '0';
 			fmt++;
-		} else {
-			padc = ' ';
 		}
 		if (*fmt == '-') {
 			ladjust = 1;
 			fmt++;
-		} else {
-			ladjust = 0;
 		}
-
 		/* width */
 		width = 0;
 		while (IsDigit(*fmt)) {
@@ -124,13 +119,11 @@ void lp_Print(void (*output)(void *, char *, int),
 		}
 
 		/* check for long */ 
+		longFlag = 0;
 		if (*fmt == 'l') {
 			longFlag = 1;
 			fmt++;
-		} else {
-			longFlag = 0;
 		}
-
 		/* check format flag */
 		negFlag = 0;
 		switch (*fmt) {
