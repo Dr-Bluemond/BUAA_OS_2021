@@ -8,7 +8,6 @@ Set the ENTRY point of the program to _start.
 */
 SECTIONS
 {
-
 /*
   Exercise 1.3. Please complete this part.
   To do:
@@ -17,7 +16,9 @@ SECTIONS
   tips: maybe you can find the answer in include/ .
 	look for the memory map.
 */
-
-
-end = . ;
+   . = 0x80010000;
+   .text : { *(.text) }
+   .data : { *(.data) }
+   .bss : { *(.bss) }
+   end = . ;
 }

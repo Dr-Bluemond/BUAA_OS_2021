@@ -44,4 +44,9 @@ clean:
 		done; \
 	rm -rf *.o *~ $(vmlinux_elf)
 
+.PHONY: run
+
+run:
+	gxemul -E testmips -C R3000 -M 64 gxemul/vmlinux
+
 include include.mk
