@@ -90,17 +90,18 @@ void lp_Print(void (*output)(void *, char *, int),
 		/* check for flag */
 		ladjust = 0;
 		padc = ' ';
-		if (*fmt == '-') {
-			ladjust = 1;
-			fmt++;
-		}
-		if (*fmt == '0') {
-			padc = '0';
-			fmt++;
-		}
-		if (*fmt == '-') {
-			ladjust = 1;
-			fmt++;
+		while (1) {
+			if (*fmt == '-') {
+				ladjust = 1;
+				fmt++;
+				continue;
+			}
+			if (*fmt == '0') {
+				padc = '0';
+				fmt++;
+				continue;
+			}
+			break;
 		}
 		/* width */
 		width = 0;
@@ -221,7 +222,6 @@ void lp_Print(void (*output)(void *, char *, int),
 
 			default:
 				/* output this char as it is */
-				/* maybe for the case of %% */
 				OUTPUT(arg, fmt, 1);
 		}	/* switch (*fmt) */
 
