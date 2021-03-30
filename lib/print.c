@@ -185,6 +185,13 @@ void lp_Print(void (*output)(void *, char *, int),
 					length = PrintChar(buf, '{', 0, 0);
 					OUTPUT(arg, buf, length);
 					// a
+					negFlag = 0;
+					if (ptr->a < 0) {
+						negFlag = 1;
+						ptr->a = -(ptr->a);
+					} else {
+						negFlag = 0;
+					}
 					length = PrintNum(buf, ptr->a, 10, negFlag, width, ladjust, padc, 0);
 					OUTPUT(arg, buf, length);
 					// pure char ,
@@ -203,6 +210,13 @@ void lp_Print(void (*output)(void *, char *, int),
 					length = PrintChar(buf, ',', 0, 0);
 					OUTPUT(arg, buf, length);
 					// d
+					negFlag = 0;
+					if (ptr->d < 0) {
+						negFlag = 1;
+						ptr->d = -(ptr->d);
+					} else {
+						negFlag = 0;
+					}
 					length = PrintNum(buf, ptr->d, 10, negFlag, width, ladjust, padc, 0);
 					OUTPUT(arg, buf, length);
 					
@@ -218,6 +232,7 @@ void lp_Print(void (*output)(void *, char *, int),
 					length = PrintChar(buf, '{', 0, 0);
 					OUTPUT(arg, buf, length);
 					// count
+					negFlag = 0;
 					length = PrintNum(buf, l2_count, 10, negFlag, width, ladjust, padc, 0);
 					OUTPUT(arg, buf, length);
 					for (l2_i = 0; l2_i < l2_count; l2_i++) {
@@ -225,6 +240,13 @@ void lp_Print(void (*output)(void *, char *, int),
 						length = PrintChar(buf, ',', 0, 0);
 						OUTPUT(arg, buf, length);
 						// num
+						negFlag = 0;
+						if (*ptr < 0) {
+							negFlag = 1;
+							*ptr = -(*ptr);
+						} else {
+							negFlag = 0;
+						}
 						length = PrintNum(buf, *ptr, 10, negFlag, width, ladjust, padc, 0);
 						OUTPUT(arg, buf, length);
 						ptr++;
