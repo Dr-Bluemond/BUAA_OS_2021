@@ -8,7 +8,7 @@ _my_putchar:
 	sb	$4,0($2)
 	j	$31
 	nop
-	.end printcharc
+	.end _my_putchar
 
 	.globl _my_getchar
 	.ent _my_getchar
@@ -16,6 +16,15 @@ _my_putchar:
 _my_getchar:
 	li	$8,-1342177280			# 0xffffffffb0000000
 	lb	$2,0($8)
+	sb	$2,0($8)
+	li  $9,13
+
+	bne $2, $9,foo
+	nop
+	li $9,10
+	sb $9, 0($8)
+
+	foo:
 	j	$31
 	nop
 	.end _my_getchar

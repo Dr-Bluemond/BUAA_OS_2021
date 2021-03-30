@@ -10,12 +10,7 @@ void my_cal() {
 		char c = _my_getchar();
 		if (c == '\0') {
 			continue;
-		} else if (c == '\r') {
-			_my_putchar(c);
-			_my_putchar('\n');
-		} else {
-			_my_putchar(c);
-		}
+		} 
 		if (c >= '0' && c <= '9') {
 			a = a * 10 + (c - '0');
 		} else { // '\n'
@@ -26,11 +21,6 @@ void my_cal() {
 		char c = _my_getchar();
 		if (c == '\0') {
 			continue;
-		} else if (c == '\r') {
-			_my_putchar(c);
-			_my_putchar('\n');
-		} else {
-			_my_putchar(c);
 		}
 		if (c >= '0' && c <= '9') {
 			b = b * 10 + (c - '0');
