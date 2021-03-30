@@ -23,6 +23,14 @@ extern int PrintNum(char *, unsigned long, int, int, int, int, char, int);
 /* private variable */
 static const char theFatalMsg[] = "fatal error in lp_Print!";
 
+/* lab 2*/
+struct s1 {
+	int a;
+	char b;
+	char c;
+	int d;
+};
+
 /* -*-
  * A low level printf() function.
  */
@@ -54,6 +62,7 @@ void lp_Print(void (*output)(void *, char *, int),
 	int prec;
 	int ladjust;
 	char padc;
+	int stypeid;
 
 	int length; // length of buf
 
@@ -125,6 +134,14 @@ void lp_Print(void (*output)(void *, char *, int),
 			longFlag = 1;
 			fmt++;
 		}
+
+		/* check for stypeid */
+		stypeid = 0;
+		if (*fmt == '$') {
+			fmt++;
+			stypeid = Ctod(*fmt);
+			fmt++;
+		}
 		/* check format flag */
 		negFlag = 0;
 		switch (*fmt) {
@@ -160,6 +177,62 @@ void lp_Print(void (*output)(void *, char *, int),
 				length = PrintNum(buf, num, 10, negFlag, width, ladjust, padc, 0);
 				OUTPUT(arg, buf, length);
 
+				break;
+			case 'T':
+				if (stypeid == 1) {
+					struct s1 *ptr = va_arg(ap, struct s1*);
+					// pure char {
+					length = PrintChar(buf, '{', 0, 0);
+					OUTPUT(arg, buf, length);
+					// a
+					length = PrintNum(buf, ptr->a, 10, negFlag, width, ladjust, padc, 0);
+					OUTPUT(arg, buf, length);
+					// pure char ,
+					length = PrintChar(buf, ',', 0, 0);
+					OUTPUT(arg, buf, length);
+					// b
+					length = PrintChar(buf, ptr->b, width, ladjust);
+					OUTPUT(arg, buf, length);
+					// pure char ,
+					length = PrintChar(buf, ',', 0, 0);
+					OUTPUT(arg, buf, length);
+					// c
+					length = PrintChar(buf, ptr->c, width, ladjust);
+					OUTPUT(arg, buf, length);
+					// pure char ,
+					length = PrintChar(buf, ',', 0, 0);
+					OUTPUT(arg, buf, length);
+					// d
+					length = PrintNum(buf, ptr->d, 10, negFlag, width, ladjust, padc, 0);
+					OUTPUT(arg, buf, length);
+					
+					// pure char }
+					length = PrintChar(buf, '}', 0, 0);
+					OUTPUT(arg, buf, length);
+				} else {
+					int *ptr = va_arg(ap, int*);
+					int l2_count = *ptr;
+					ptr++;
+					int l2_i;
+					// pure char {
+					length = PrintChar(buf, '{', 0, 0);
+					OUTPUT(arg, buf, length);
+					// count
+					length = PrintNum(buf, l2_count, 10, negFlag, width, ladjust, padc, 0);
+					OUTPUT(arg, buf, length);
+					for (l2_i = 0; l2_i < l2_count; l2_i++) {
+						// pure char ,
+						length = PrintChar(buf, ',', 0, 0);
+						OUTPUT(arg, buf, length);
+						// num
+						length = PrintNum(buf, *ptr, 10, negFlag, width, ladjust, padc, 0);
+						OUTPUT(arg, buf, length);
+						ptr++;
+					}
+					// pure char }
+					length = PrintChar(buf, '}', 0, 0);
+					OUTPUT(arg, buf, length);
+				}
 				break;
 
 			case 'o':
