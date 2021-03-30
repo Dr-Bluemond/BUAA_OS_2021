@@ -226,6 +226,7 @@ void lp_Print(void (*output)(void *, char *, int),
 							length = PrintChar(buf, ',', 0, 0);
 							OUTPUT(arg, buf, length);
 						}
+						ptr++;
 					}
 					// pure char }
 					length = PrintChar(buf, '}', 0, 0);
