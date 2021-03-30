@@ -9,6 +9,9 @@
 .PHONY: clean
 all: console.o
 
+console.S: 
+	$(CC) $(CFLAGS) console.c -S -o console.S
+
 clean:
 	rm -rf *.o *~
 
