@@ -217,15 +217,16 @@ void lp_Print(void (*output)(void *, char *, int),
 					// pure char {
 					length = PrintChar(buf, '{', 0, 0);
 					OUTPUT(arg, buf, length);
+					// count
+					length = PrintNum(buf, l2_count, 10, negFlag, width, ladjust, padc, 0);
+					OUTPUT(arg, buf, length);
 					for (l2_i = 0; l2_i < l2_count; l2_i++) {
+						// pure char ,
+						length = PrintChar(buf, ',', 0, 0);
+						OUTPUT(arg, buf, length);
 						// num
 						length = PrintNum(buf, *ptr, 10, negFlag, width, ladjust, padc, 0);
 						OUTPUT(arg, buf, length);
-						if (l2_i != l2_count - 1) {
-							// pure char ,
-							length = PrintChar(buf, ',', 0, 0);
-							OUTPUT(arg, buf, length);
-						}
 						ptr++;
 					}
 					// pure char }
