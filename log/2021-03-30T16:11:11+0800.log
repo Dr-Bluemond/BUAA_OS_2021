@@ -1,0 +1,212 @@
+Autotest: Begin at Tue Mar 30 16:11:11 CST 2021
+[32m[ We found /home/git/ostest/target/19231140/lab1-2-Extra-2021-03-30T16:11:11+0800-Ernn8/my_cal/my_cal.c ][0m
+[32m[ We found /home/git/ostest/target/19231140/lab1-2-Extra-2021-03-30T16:11:11+0800-Ernn8/my_cal/my_driver.S ][0m
+[32m[ We found /home/git/ostest/target/19231140/lab1-2-Extra-2021-03-30T16:11:11+0800-Ernn8/my_cal/Makefile ][0m
+Checkfile complete
+rm: 无法删除"/home/git/ostest/target/19231140/lab1-2-Extra-2021-03-30T16:11:11+0800-Ernn8/my_cal/*.o": 没有那个文件或目录
+finish file cleaning
+rm -rf *~ *.o
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include/ -c my_driver.S 
+/OSLAB/compiler/usr/bin/mips_4KC-gcc  -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include/ -c my_cal.c
+my_cal.c: In function 'my_cal':
+my_cal.c:33: warning: implicit declaration of function 'print_num'
+my_cal.c: At top level:
+my_cal.c:37: warning: conflicting types for 'print_num'
+my_cal.c:33: warning: previous implicit declaration of 'print_num' was here
+my_cal.c: In function 'print_num':
+my_cal.c:46: warning: implicit declaration of function '_my_putchar'
+[32m[ We found /home/git/ostest/target/19231140/lab1-2-Extra-2021-03-30T16:11:11+0800-Ernn8/my_cal/my_cal.o ][0m
+[32m[ We found /home/git/ostest/target/19231140/lab1-2-Extra-2021-03-30T16:11:11+0800-Ernn8/my_cal/my_driver.o ][0m
+[32m[ Compile success! my_cal.o my_driver.o found. ][0m
+start test
+start test my_driver.S
+for d in boot drivers init lib my_cal ;	\
+	do					\
+		make --directory=$d clean; \
+	done; \
+rm -rf *.o *~ gxemul/vmlinux
+make[1]: Entering directory '/usr/src/workdir/boot'
+rm -rf *~ *.o
+make[1]: Leaving directory '/usr/src/workdir/boot'
+make[1]: Entering directory '/usr/src/workdir/drivers'
+for d in gxconsole; \
+	do				\
+		make --directory=$d clean; \
+	done
+make[2]: Entering directory '/usr/src/workdir/drivers/gxconsole'
+rm -rf *.o *~
+make[2]: Leaving directory '/usr/src/workdir/drivers/gxconsole'
+make[1]: Leaving directory '/usr/src/workdir/drivers'
+make[1]: Entering directory '/usr/src/workdir/init'
+rm -rf *~ *.o
+make[1]: Leaving directory '/usr/src/workdir/init'
+make[1]: Entering directory '/usr/src/workdir/lib'
+rm -rf *~ *.o
+make[1]: Leaving directory '/usr/src/workdir/lib'
+make[1]: Entering directory '/usr/src/workdir/my_cal'
+rm -rf *~ *.o
+make[1]: Leaving directory '/usr/src/workdir/my_cal'
+make --directory=boot
+make[1]: Entering directory '/usr/src/workdir/boot'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -I../include/ -c start.S 
+make[1]: Leaving directory '/usr/src/workdir/boot'
+make --directory=drivers
+make[1]: Entering directory '/usr/src/workdir/drivers'
+make --directory=gxconsole
+make[2]: Entering directory '/usr/src/workdir/drivers/gxconsole'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC   -c -o console.o console.c
+make[2]: Leaving directory '/usr/src/workdir/drivers/gxconsole'
+make[1]: Leaving directory '/usr/src/workdir/drivers'
+make --directory=init
+make[1]: Entering directory '/usr/src/workdir/init'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc  -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -I../include -c init.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc  -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -I../include -c main.c
+make[1]: Leaving directory '/usr/src/workdir/init'
+make --directory=lib
+make[1]: Entering directory '/usr/src/workdir/lib'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -I./ -I../ -I../include/ -c print.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -I./ -I../ -I../include/ -c printf.c
+make[1]: Leaving directory '/usr/src/workdir/lib'
+make --directory=my_cal
+make[1]: Entering directory '/usr/src/workdir/my_cal'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -I../include/ -c my_driver.S 
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -I../include/ -c my_cal.c 
+make[1]: Leaving directory '/usr/src/workdir/my_cal'
+/OSLAB/compiler/usr/bin/mips_4KC-ld -o gxemul/vmlinux -N -T tools/scse0_3.lds boot/start.o init/main.o init/init.o drivers/gxconsole/console.o lib/*.o my_cal/*.o
+/home/git/scripts/ostest/lab1-2-Extra/test/expect.test1
+/home/git/scripts/ostest/lab1-2-Extra/test/std_ans1
+[35m[ PASSED:3 ][0m
+[35m[ TOTAL:3 ][0m
+[32m[ You have passed the testfile1 ][0m
+star test my_cal.c
+for d in boot drivers init lib my_cal ;	\
+	do					\
+		make --directory=$d clean; \
+	done; \
+rm -rf *.o *~ gxemul/vmlinux
+make[1]: Entering directory '/usr/src/workdir/boot'
+rm -rf *~ *.o
+make[1]: Leaving directory '/usr/src/workdir/boot'
+make[1]: Entering directory '/usr/src/workdir/drivers'
+for d in gxconsole; \
+	do				\
+		make --directory=$d clean; \
+	done
+make[2]: Entering directory '/usr/src/workdir/drivers/gxconsole'
+rm -rf *.o *~
+make[2]: Leaving directory '/usr/src/workdir/drivers/gxconsole'
+make[1]: Leaving directory '/usr/src/workdir/drivers'
+make[1]: Entering directory '/usr/src/workdir/init'
+rm -rf *~ *.o
+make[1]: Leaving directory '/usr/src/workdir/init'
+make[1]: Entering directory '/usr/src/workdir/lib'
+rm -rf *~ *.o
+make[1]: Leaving directory '/usr/src/workdir/lib'
+make[1]: Entering directory '/usr/src/workdir/my_cal'
+rm -rf *~ *.o
+make[1]: Leaving directory '/usr/src/workdir/my_cal'
+make --directory=boot
+make[1]: Entering directory '/usr/src/workdir/boot'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -I../include/ -c start.S 
+make[1]: Leaving directory '/usr/src/workdir/boot'
+make --directory=drivers
+make[1]: Entering directory '/usr/src/workdir/drivers'
+make --directory=gxconsole
+make[2]: Entering directory '/usr/src/workdir/drivers/gxconsole'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC   -c -o console.o console.c
+make[2]: Leaving directory '/usr/src/workdir/drivers/gxconsole'
+make[1]: Leaving directory '/usr/src/workdir/drivers'
+make --directory=init
+make[1]: Entering directory '/usr/src/workdir/init'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc  -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -I../include -c init.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc  -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -I../include -c main.c
+make[1]: Leaving directory '/usr/src/workdir/init'
+make --directory=lib
+make[1]: Entering directory '/usr/src/workdir/lib'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -I./ -I../ -I../include/ -c print.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -I./ -I../ -I../include/ -c printf.c
+make[1]: Leaving directory '/usr/src/workdir/lib'
+make --directory=my_cal
+make[1]: Entering directory '/usr/src/workdir/my_cal'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -I../include/ -c my_driver.S 
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -I../include/ -c my_cal.c 
+my_cal.c: In function 'my_cal':
+my_cal.c:33: warning: implicit declaration of function 'print_num'
+my_cal.c: At top level:
+my_cal.c:37: warning: conflicting types for 'print_num'
+my_cal.c:33: warning: previous implicit declaration of 'print_num' was here
+my_cal.c: In function 'print_num':
+my_cal.c:46: warning: implicit declaration of function '_my_putchar'
+make[1]: Leaving directory '/usr/src/workdir/my_cal'
+/OSLAB/compiler/usr/bin/mips_4KC-ld -o gxemul/vmlinux -N -T tools/scse0_3.lds boot/start.o init/main.o init/init.o drivers/gxconsole/console.o lib/*.o my_cal/*.o
+/home/git/scripts/ostest/lab1-2-Extra/test/expect.test2
+/home/git/scripts/ostest/lab1-2-Extra/test/std_ans2
+[35m[ PASSED:3 ][0m
+[35m[ TOTAL:3 ][0m
+[32m[ You have passed the testfile2 ][0m
+for d in boot drivers init lib my_cal ;	\
+	do					\
+		make --directory=$d clean; \
+	done; \
+rm -rf *.o *~ gxemul/vmlinux
+make[1]: Entering directory '/usr/src/workdir/boot'
+rm -rf *~ *.o
+make[1]: Leaving directory '/usr/src/workdir/boot'
+make[1]: Entering directory '/usr/src/workdir/drivers'
+for d in gxconsole; \
+	do				\
+		make --directory=$d clean; \
+	done
+make[2]: Entering directory '/usr/src/workdir/drivers/gxconsole'
+rm -rf *.o *~
+make[2]: Leaving directory '/usr/src/workdir/drivers/gxconsole'
+make[1]: Leaving directory '/usr/src/workdir/drivers'
+make[1]: Entering directory '/usr/src/workdir/init'
+rm -rf *~ *.o
+make[1]: Leaving directory '/usr/src/workdir/init'
+make[1]: Entering directory '/usr/src/workdir/lib'
+rm -rf *~ *.o
+make[1]: Leaving directory '/usr/src/workdir/lib'
+make[1]: Entering directory '/usr/src/workdir/my_cal'
+rm -rf *~ *.o
+make[1]: Leaving directory '/usr/src/workdir/my_cal'
+make --directory=boot
+make[1]: Entering directory '/usr/src/workdir/boot'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -I../include/ -c start.S 
+make[1]: Leaving directory '/usr/src/workdir/boot'
+make --directory=drivers
+make[1]: Entering directory '/usr/src/workdir/drivers'
+make --directory=gxconsole
+make[2]: Entering directory '/usr/src/workdir/drivers/gxconsole'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC   -c -o console.o console.c
+make[2]: Leaving directory '/usr/src/workdir/drivers/gxconsole'
+make[1]: Leaving directory '/usr/src/workdir/drivers'
+make --directory=init
+make[1]: Entering directory '/usr/src/workdir/init'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc  -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -I../include -c init.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc  -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -I../include -c main.c
+make[1]: Leaving directory '/usr/src/workdir/init'
+make --directory=lib
+make[1]: Entering directory '/usr/src/workdir/lib'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -I./ -I../ -I../include/ -c print.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -I./ -I../ -I../include/ -c printf.c
+make[1]: Leaving directory '/usr/src/workdir/lib'
+make --directory=my_cal
+make[1]: Entering directory '/usr/src/workdir/my_cal'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -I../include/ -c my_driver.S 
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -I../include/ -c my_cal.c 
+my_cal.c: In function 'my_cal':
+my_cal.c:33: warning: implicit declaration of function 'print_num'
+my_cal.c: At top level:
+my_cal.c:37: warning: conflicting types for 'print_num'
+my_cal.c:33: warning: previous implicit declaration of 'print_num' was here
+my_cal.c: In function 'print_num':
+my_cal.c:46: warning: implicit declaration of function '_my_putchar'
+make[1]: Leaving directory '/usr/src/workdir/my_cal'
+/OSLAB/compiler/usr/bin/mips_4KC-ld -o gxemul/vmlinux -N -T tools/scse0_3.lds boot/start.o init/main.o init/init.o drivers/gxconsole/console.o lib/*.o my_cal/*.o
+/home/git/scripts/ostest/lab1-2-Extra/test/expect.test3
+/home/git/scripts/ostest/lab1-2-Extra/test/std_ans3
+[35m[ PASSED:3 ][0m
+[35m[ TOTAL:3 ][0m
+[32m[ You have passed the testfile3 ][0m
+[33m[01m[ You got 100 (of 100) this time. Tue Mar 30 16:11:19 CST 2021 ][0m
