@@ -1,20 +1,17 @@
+#include <asm/regdef.h>
+#include <asm/cp0regdef.h>
+#include <asm/asm.h>
 	.text
-	.globl _my_putchar
-	.ent _my_putchar
-	.type _my_putchar, @function
-_my_putchar:
+LEAF(_my_putchar)
 	andi	$4,$4,0x00ff
-	li	$2,-1342177280			# 0xffffffffb0000000
-	sb	$4,0($2)
+	li	$8,0xb0000000
+	sb	$4,0($8)
 	j	$31
 	nop
-	.end _my_putchar
+END(_my_putchar)
 
-	.globl _my_getchar
-	.ent _my_getchar
-	.type _my_getchar @function
-_my_getchar:
-	li	$8,-1342177280			# 0xffffffffb0000000
+LEAF(_my_getchar)
+	li	$8,0xb0000000
 	lb	$2,0($8)
 	sb	$2,0($8)
 	li  $9,13
@@ -27,15 +24,11 @@ _my_getchar:
 	foo:
 	j	$31
 	nop
-	.end _my_getchar
+END(_my_getchar)
 
-	.globl _my_exit
-	.ent _my_exit
-	.type _my_exit, @function
-_my_exit:
-	li	$2,-1342177280			# 0xffffffffb0000000
-	ori	$2,$2,0x10
-	sb	$0,0($2)
+LEAF(_my_exit)
+	li	$8,0xb0000010
+	sb	$0,0($8)
 	j	$31
 	nop
-	.end _my_exit
+END(_my_exit)
