@@ -26,8 +26,11 @@ void mips_detect_memory()
 {
     /* Step 1: Initialize basemem.
      * (When use real computer, CMOS tells us how many kilobytes there are). */
-
+	basemem = 1 << 26;
+	extmem = 0;
+	maxpa = basemem + extmem;
     // Step 2: Calculate corresponding npage value.
+	npage = maxpa >> 12;
 
     printf("Physical memory: %dK available, ", (int)(maxpa / 1024));
     printf("base = %dK, extended = %dK\n", (int)(basemem / 1024),
@@ -42,38 +45,71 @@ void mips_detect_memory()
    Post-Condition:
 	If we're out of memory, should panic, else return this address of memory we have allocated.*/
 static void *alloc(u_int n, u_int align, int clear)
+
 {
+
     extern char end[];
+
     u_long alloced_mem;
 
+
+
     /* Initialize `freemem` if this is the first time. The first virtual address that the
+
      * linker did *not* assign to any kernel code or global variables. */
+
     if (freemem == 0) {
-        freemem = (u_long)end;
+
+        freemem = (u_long)end; // end
+
     }
+
+
 
     /* Step 1: Round up `freemem` up to be aligned properly */
+
     freemem = ROUND(freemem, align);
 
+
+
     /* Step 2: Save current value of `freemem` as allocated chunk. */
+
     alloced_mem = freemem;
 
+
+
     /* Step 3: Increase `freemem` to record allocation. */
+
     freemem = freemem + n;
 
-    /* Step 4: Clear allocated chunk if parameter `clear` is set. */
-    if (clear) {
-        bzero((void *)alloced_mem, n);
-    }
+
 
     // We're out of memory, PANIC !!
+
     if (PADDR(freemem) >= maxpa) {
+
         panic("out of memorty\n");
+
         return (void *)-E_NO_MEM;
+
     }
 
+
+
+    /* Step 4: Clear allocated chunk if parameter `clear` is set. */
+
+    if (clear) {
+
+        bzero((void *)alloced_mem, n);
+
+    }
+
+
+
     /* Step 5: return allocated chunk. */
+
     return (void *)alloced_mem;
+
 }
 
 /* Overview:
@@ -173,17 +209,28 @@ void
 page_init(void)
 {
     /* Step 1: Initialize page_free_list. */
+	LIST_INIT(&page_free_list);
     /* Hint: Use macro `LIST_INIT` defined in include/queue.h. */
 
 
     /* Step 2: Align `freemem` up to multiple of BY2PG. */
+	freemem = ROUND(freemem, BY2PG);
 
 
     /* Step 3: Mark all memory blow `freemem` as used(set `pp_ref`
      * filed to 1) */
-
+	int used_page = PADDR(freemem)/BY2PG;
+	int i;
+	for (i = 0; i < used_page; i++) {
+		pages[i].pp_ref = 1;
+	}
+		
 
     /* Step 4: Mark the other memory as free. */
+	for (i = used_page; i < npage; i++) {
+		pages[i].pp_ref = 0;
+		LIST_INSERT_HEAD(&page_free_list, &pages[i], pp_link);
+	}
 }
 
 /*Overview:
@@ -206,11 +253,18 @@ page_alloc(struct Page **pp)
     struct Page *ppage_temp;
 
     /* Step 1: Get a page from free memory. If fails, return the error code.*/
+	if ((ppage_temp = LIST_FIRST(&page_free_list)) == NULL) {
+		return -E_NO_MEM;
+	} 
 
 
     /* Step 2: Initialize this page.
      * Hint: use `bzero`. */
-
+	LIST_REMOVE(ppage_temp, pp_link);
+	u_long temp = page2kva(ppage_temp);
+	bzero((void *)temp, BY2PG);
+	*pp = ppage_temp;
+	return 0;
 
 }
 
@@ -221,10 +275,18 @@ page_alloc(struct Page **pp)
 void
 page_free(struct Page *pp)
 {
-    /* Step 1: If there's still virtual address refers to this page, do nothing. */
+	/* Step 1: If there's still virtual address refers to this page, do nothing. */
+
+	if(pp->pp_ref > 0) {
+		return;
+	}
 
 
     /* Step 2: If the `pp_ref` reaches to 0, mark this page as free and return. */
+	if(pp->pp_ref == 0) {
+		LIST_INSERT_HEAD(&page_free_list, pp, pp_link);
+		return;
+	}
 
 
     /* If the value of `pp_ref` less than 0, some error must occurred before,

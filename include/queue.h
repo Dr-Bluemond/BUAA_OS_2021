@@ -156,7 +156,7 @@
 						(elm)->field.le_prev = &LIST_FIRST((head));                                       \
 				} else {                                                                                  \
 						for ((LIST_NEXT((elm), field)) = LIST_FIRST((head));                              \
-								 ((LIST_NEXT(LIST_NEXT((elm), field)), field) != NULL);                   \
+								 ((LIST_NEXT(LIST_NEXT((elm), field), field)) != NULL);                   \
 								 (LIST_NEXT((elm), field)) = LIST_NEXT(LIST_NEXT((elm), field), field));  \
 						LIST_NEXT(LIST_NEXT((elm), field), field) = (elm);                                \
 						(elm)->field.le_prev = &LIST_NEXT(LIST_NEXT((elm), field), field);                \
