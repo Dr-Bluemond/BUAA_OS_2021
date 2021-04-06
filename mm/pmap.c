@@ -232,7 +232,7 @@ page_init(void)
 	int j = i * 32;
 	unsigned int mask = 1;
 	while (j < used_page) {
-		page_bitmap[i] |= mask;
+		page_bitmap[j] |= mask;
 		mask << 1;
 		j++;
 	}
