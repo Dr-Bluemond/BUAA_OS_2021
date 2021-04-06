@@ -222,21 +222,19 @@ page_init(void)
     /* Step 3: Mark all memory blow `freemem` as used(set `pp_ref`
      * filed to 1) */
 	int used_page = PADDR(freemem)/BY2PG;
-	int i;
+	int i, j;
+	int im, jm;
 	for (i = 0; i < MAPSIZE; i++) {
 		page_bitmap[i] = 0;
 	}
-	for (i = 0; i < used_page / 32; i++) {
+	im = used_page / 32;
+	jm = used_page % 32;
+	for (i = 0; i < im; i++) {
 		page_bitmap[i] = ~0;
 	}
-	int j = i * 32;
-	unsigned int mask = 1;
-	while (j < used_page) {
-		page_bitmap[j] |= mask;
-		mask << 1;
-		j++;
+	for (j = 0; j < jm; j++) {
+		page_bitmap[im] |= (1 << j);
 	}
-
 	printf("page bitmap size is %x\n", MAPSIZE);
 }
 
