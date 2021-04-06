@@ -265,7 +265,7 @@ page_alloc(struct Page **pp)
 		if (bits != ~0) {
 			for (j = 0; j < 32; j++) {
 				if ((bits & (1 << j)) == 0) {
-					bits &= (1 << j);
+					bits |= (1 << j);
 					page_bitmap[i] = bits;
 					pn = i * 32 + j;
 					*pp = pages+pn;
@@ -313,7 +313,7 @@ page_free(struct Page *pp)
 	if(pp->pp_ref == 0) {
 		i = pn / 32;
 		j = pn % 32;
-		page_bitmap[i] &= (1 << j);
+		page_bitmap[i] &= ~(1 << j);
 		return;
 	}
 
