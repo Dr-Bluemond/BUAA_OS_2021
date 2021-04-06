@@ -236,6 +236,8 @@ page_init(void)
 		mask << 1;
 		j++;
 	}
+
+	printf("page bitmap size is %x\n", MAPSIZE);
 }
 
 /*Overview:
