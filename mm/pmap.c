@@ -3,6 +3,7 @@
 #include "printf.h"
 #include "env.h"
 #include "error.h"
+#define MAPSIZE 512
 
 
 /* These variables are set by mips_detect_memory() */
@@ -17,6 +18,7 @@ struct Page *pages;
 static u_long freemem;
 
 static struct Page_list page_free_list;	/* Free list of physical pages */
+unsigned int page_bitmap[MAPSIZE];
 
 
 /* Overview:
@@ -209,7 +211,7 @@ void
 page_init(void)
 {
     /* Step 1: Initialize page_free_list. */
-	LIST_INIT(&page_free_list);
+	// LIST_INIT(&page_free_list);
     /* Hint: Use macro `LIST_INIT` defined in include/queue.h. */
 
 
@@ -221,15 +223,18 @@ page_init(void)
      * filed to 1) */
 	int used_page = PADDR(freemem)/BY2PG;
 	int i;
-	for (i = 0; i < used_page; i++) {
-		pages[i].pp_ref = 1;
+	for (i = 0; i < MAPSIZE; i++) {
+		page_bitmap[i] = 0;
 	}
-		
-
-    /* Step 4: Mark the other memory as free. */
-	for (i = used_page; i < npage; i++) {
-		pages[i].pp_ref = 0;
-		LIST_INSERT_HEAD(&page_free_list, &pages[i], pp_link);
+	for (i = 0; i < used_page / 32; i++) {
+		page_bitmap[i] = ~0;
+	}
+	int j = i * 32;
+	unsigned int mask = 1;
+	while (j < used_page) {
+		page_bitmap[i] |= mask;
+		mask << 1;
+		j++;
 	}
 }
 
@@ -250,22 +255,40 @@ page_init(void)
 int
 page_alloc(struct Page **pp)
 {
-    struct Page *ppage_temp;
+    int pn;
+	int i, j;
+	unsigned int bits;
+	for (i = 0; i < MAPSIZE; i++) {
+		bits = page_bitmap[i];
+		if (bits != ~0) {
+			for (j = 0; j < 32; j++) {
+				if ((bits & (1 << j)) == 0) {
+					bits &= (1 << j);
+					page_bitmap[i] = bits;
+					pn = i * 32 + j;
+					*pp = pages+pn;
+					return 0;
+				}
+			}
+		}
+	}
 
-    /* Step 1: Get a page from free memory. If fails, return the error code.*/
-	if ((ppage_temp = LIST_FIRST(&page_free_list)) == NULL) {
-		return -E_NO_MEM;
-	} 
+	return -E_NO_MEM;
 
-
-    /* Step 2: Initialize this page.
-     * Hint: use `bzero`. */
-	LIST_REMOVE(ppage_temp, pp_link);
-	u_long temp = page2kva(ppage_temp);
-	bzero((void *)temp, BY2PG);
-	*pp = ppage_temp;
-	return 0;
-
+//    /* Step 1: Get a page from free memory. If fails, return the error code.*/
+//	if ((ppage_temp = LIST_FIRST(&page_free_list)) == NULL) {
+//		return -E_NO_MEM;
+//	} 
+//
+//
+//    /* Step 2: Initialize this page.
+//     * Hint: use `bzero`. */
+//	LIST_REMOVE(ppage_temp, pp_link);
+//	u_long temp = page2kva(ppage_temp);
+//	bzero((void *)temp, BY2PG);
+//	*pp = ppage_temp;
+//	return 0;
+//
 }
 
 /*Overview:
@@ -282,9 +305,13 @@ page_free(struct Page *pp)
 	}
 
 
+	int pn = page2ppn(pp);
+	int i, j;
     /* Step 2: If the `pp_ref` reaches to 0, mark this page as free and return. */
 	if(pp->pp_ref == 0) {
-		LIST_INSERT_HEAD(&page_free_list, pp, pp_link);
+		i = pn / 32;
+		j = pn % 32;
+		page_bitmap[i] &= (1 << j);
 		return;
 	}
 

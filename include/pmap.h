@@ -102,5 +102,7 @@ void boot_map_segment(Pde *pgdir, u_long va, u_long size, u_long pa, int perm);
 
 extern struct Page *pages;
 
+void pm_check(void);
+
 
 #endif /* _PMAP_H_ */
