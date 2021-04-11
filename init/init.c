@@ -13,8 +13,8 @@ void mips_init()
 	mips_vm_init();
 	page_init();
 
-	physical_memory_manage_check();
-        //page_check();
+	// physical_memory_manage_check();
+    page_check();
 
 	panic("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 
@@ -63,5 +63,4 @@ void bzero(void *b, size_t len)
 	while (b < max) {
 		*(char *)b++ = 0;
 	}
-
 }
