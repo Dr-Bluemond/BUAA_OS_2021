@@ -127,7 +127,7 @@ static Pte *boot_pgdir_walk(Pde *pgdir, u_long va, int create)
     /* Hint: Use KADDR and PTE_ADDR to get the page table from page directory
      * entry value. */
 	pgdir_entryp = pgdir + PDX(va);
-	pgtable = PTE_ADDR(*pgdir_entryp);
+	pgtable = KADDR(PTE_ADDR(*pgdir_entryp));
 
     /* Step 2: If the corresponding page table is not exist and parameter `create`
      * is set, create one. And set the correct permission bits for this new page
@@ -135,7 +135,7 @@ static Pte *boot_pgdir_walk(Pde *pgdir, u_long va, int create)
 	if (!((*pgdir_entryp) & PTE_V)) {
 		if (create) {
 			pgtable = alloc(BY2PG, BY2PG, 1);
-			*pgdir_entryp = pgtable;
+			*pgdir_entryp = PADDR(pgtable);
 			*pgdir_entryp |= PTE_V;
 		} else {
 			return NULL;
@@ -333,7 +333,6 @@ pgdir_walk(Pde *pgdir, u_long va, int create, Pte **ppte)
 
     /* Step 1: Get the corresponding page directory entry and page table. */
 	pgdir_entryp = (pgdir + PDX(va));
-	pgtable = PTE_ADDR(*pgdir_entryp);
 
     /* Step 2: If the corresponding page table is not exist(valid) and parameter `create`
      * is set, create one. And set the correct permission bits for this new page
@@ -412,7 +411,7 @@ page_insert(Pde *pgdir, struct Page *pp, u_long va, u_int perm)
     /* Step 3.2 Insert page and increment the pp_ref */
 
 
-	*(pgtable_entry) = (page2pa(pp) | PERM);
+	*pgtable_entry = page2pa(pp) | PERM;
 	pp->pp_ref += 1;
 
     return 0;
