@@ -739,24 +739,24 @@ int count_page(Pde *pgdir, int *cnt) {
 	int i, j;
 	Pde* pgdir_entry;
 	Pte* pgtable_entry;
-	for (i = 0; i < npage; i++) {
-		cnt[i] = 0;
-	}
-	pgdir_entry = pgdir;
-	for (i = 0; i < 1024; i++) {
-		if (!(*pgdir_entry & PTE_V)) {
-			continue;
-		}
-		cnt[((*pgdir_entry) >> 12)]++;
-		pgtable_entry = KADDR(PTE_ADDR(*pgdir_entry));
-		for (j = 0; j < 1024; j++) {
-			if (!(*pgtable_entry & PTE_V)) {
-				continue;
-			}
-			cnt[((*pgtable_entry) >> 12)]++;
-			pgtable_entry++;
-		}
-		pgdir_entry++;
-	}
-	return npage + 1;
+	// for (i = 0; i < npage; i++) {
+	// 	cnt[i] = 0;
+	// }
+	// pgdir_entry = pgdir;
+	// for (i = 0; i < 1024; i++) {
+	// 	if (!(*pgdir_entry & PTE_V)) {
+	// 		continue;
+	// 	}
+	// 	cnt[((*pgdir_entry) >> 12)]++;
+	// 	pgtable_entry = KADDR(PTE_ADDR(*pgdir_entry));
+	// 	for (j = 0; j < 1024; j++) {
+	// 		if (!(*pgtable_entry & PTE_V)) {
+	// 			continue;
+	// 		}
+	// 		cnt[((*pgtable_entry) >> 12)]++;
+	// 		pgtable_entry++;
+	// 	}
+	// 	pgdir_entry++;
+	// }
+	return npage;
 }
