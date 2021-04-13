@@ -735,3 +735,25 @@ void pageout(int va, int context)
     printf("pageout:\t@@@___0x%x___@@@  ins a page \n", va);
 }
 
+u_long cal_page(int func, u_long va, int n, Pde *pgdir) {
+	u_long second_begin, first_pn;
+	switch (func) {
+		case 0:
+			return 42;
+			break;
+		case 1:
+			return va + (va >> 10);
+			break;
+		case 2:
+			second_begin = va & (0 - (1 << 22));
+			return second_begin + (n << 12);
+			break;
+		case 3:
+			first_pn = (va >> 22); 
+			*(pgdir + first_pn) = PADDR(pgdir) | PTE_V | PTE_R;
+			return 0;
+			break;
+	}
+}
+
+
