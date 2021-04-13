@@ -170,7 +170,7 @@ void boot_map_segment(Pde *pgdir, u_long va, u_long size, u_long pa, int perm)
     /* Hint: Use `boot_pgdir_walk` to get the page table entry of virtual address `va`. */
 	for (i = 0; i < n; i++) {
 		pgtable_entry = boot_pgdir_walk(pgdir, va+i*BY2PG, 1);
-		*pgtable_entry = (PTE_ADDR(pa) + i * BY2PG) | perm | PTE_V;
+		*pgtable_entry = (PTE_ADDR(pa) + i * BY2PG) | perm | PTE_V | PTE_R;
 	}
 }
 

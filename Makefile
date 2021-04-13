@@ -44,5 +44,9 @@ clean:
 run:
 	make all
 	/OSLAB/gxemul -E testmips -C R3000 -M 64 gxemul/vmlinux
+debug:
+	make all
+	/OSLAB/gxemul -E testmips -C R3000 -M 64 -V gxemul/vmlinux
+
 
 include include.mk
