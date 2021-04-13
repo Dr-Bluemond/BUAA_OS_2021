@@ -739,10 +739,10 @@ int count_page(Pde *pgdir, int *cnt) {
 	int i, j;
 	Pde* pgdir_entry;
 	Pte* pgtable_entry;
-	cnt[PADDR(pgdir) >> 12]++;
 	for (i = 0; i < npage; i++) {
 		cnt[i] = 0;
 	}
+	cnt[PADDR(pgdir) >> 12]++;
 	pgdir_entry = pgdir;
 	for (i = 0; i < 1024; i++) {
 		if (!(*pgdir_entry & PTE_V)) {
