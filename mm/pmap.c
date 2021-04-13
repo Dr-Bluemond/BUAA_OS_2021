@@ -747,6 +747,7 @@ int count_page(Pde *pgdir, int *cnt) {
 		if (!(*pgdir_entry & PTE_V)) {
 			continue;
 		}
+		cnt[((*pgdir_entry) >> 12)]++;
 		pgtable_entry = KADDR(PTE_ADDR(*pgdir_entry));
 		for (j = 0; j < 1024; j++) {
 			if (!(*pgtable_entry & PTE_V)) {
