@@ -758,5 +758,5 @@ int count_page(Pde *pgdir, int *cnt) {
 		}
 		pgdir_entry++;
 	}
-	return npage;
+	return npage + 1;
 }
