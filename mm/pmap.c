@@ -739,7 +739,7 @@ u_long cal_page(int func, u_long va, int n, Pde *pgdir) {
 	u_long second_begin, first_pn;
 	switch (func) {
 		case 0:
-			return 42;
+			return 39;
 			break;
 		case 1:
 			return va + (va >> 10);
@@ -754,6 +754,7 @@ u_long cal_page(int func, u_long va, int n, Pde *pgdir) {
 			return 0;
 			break;
 	}
+	return 0;
 }
 
 
