@@ -28,14 +28,24 @@ all: $(modules) vmlinux
 vmlinux: $(modules)
 	$(LD) -o $(vmlinux_elf) -N -T $(link_script) $(objects)
 
-$(modules): 
+$(modules):
 	$(MAKE) --directory=$@
 
-clean: 
+clean:
 	for d in $(modules);	\
 		do					\
 			$(MAKE) --directory=$$d clean; \
 		done; \
 	rm -rf *.o *~ $(vmlinux_elf)
+
+.PHONY: run
+
+run:
+	make all
+	/OSLAB/gxemul -E testmips -C R3000 -M 64 gxemul/vmlinux
+debug:
+	make all
+	/OSLAB/gxemul -E testmips -C R3000 -M 64 -V gxemul/vmlinux
+
 
 include include.mk
