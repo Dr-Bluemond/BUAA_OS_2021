@@ -145,6 +145,7 @@ env_setup_vm(struct Env *e)
     }
 	p->pp_ref++;
 	pgdir = (Pde *)page2kva(p);
+	e->env_cr3 = PADDR(pgdir);
 	e->env_pgdir = pgdir;
 
 
@@ -257,42 +258,39 @@ static int load_icode_mapper(u_long va, u_int32_t sgsize,
     int r;
     u_long offset = va - ROUNDDOWN(va, BY2PG);
 	Pde *pgdir = env->env_pgdir;
-	int rem = 0;
+	int size = 0;
 
     /*Step 1: load all content of bin into memory. */
 
 	if (offset > 0) {
-		p = page_lookup(pgdir, va, NULL);
-		if (p == NULL) {
-			if ((r = page_alloc(&p)) < 0) {
-				return r;
-			}
-			page_insert(pgdir, p, va, PTE_R);
+		if ((r = page_alloc(&p)) < 0) {
+			return r;
 		}
-		rem = BY2PG - offset;
-		rem = (bin_size < rem) ? bin_size : rem;
-		bcopy((void *)bin, (void *)(page2kva(p) + offset), rem);
+		page_insert(pgdir, p, va, PTE_R);
+		size = BY2PG - offset;
+		size = (bin_size < size) ? bin_size : size;
+		bcopy((void *)bin, (void *)(page2kva(p) + offset), size);
 		
 	}
 
 	// what is this fucking things?
-    for (i = rem; i < bin_size; i += rem) {
+    for (i = size; i < bin_size; i += size) {
         /* Hint: You should alloc a new page. */
 		if ((r = page_alloc(&p)) < 0) {
 			return r;
 		}
 		page_insert(pgdir, p, va + i, PTE_R);
-		rem = (BY2PG < (bin_size-i)) ? BY2PG : (bin_size - i);
-		bcopy((void *)(bin + i), (void *)page2kva(p), rem);
+		size = (BY2PG < (bin_size-i)) ? BY2PG : (bin_size - i);
+		bcopy((void *)(bin + i), (void *)page2kva(p), size);
     }
     /*Step 2: alloc pages to reach `sgsize` when `bin_size` < `sgsize`.
     * hint: variable `i` has the value of `bin_size` now! */
 	offset = i-ROUNDDOWN(i,BY2PG);
 	if (offset > 0) {
-		rem = BY2PG - offset;
-		rem = (sgsize - i < rem) ? (sgsize - i) : rem;
-		bzero((void *)(page2kva(p) + offset), rem);
-		i = i + rem;
+		size = BY2PG - offset;
+		size = (sgsize - i < size) ? (sgsize - i) : size;
+		bzero((void *)(page2kva(p) + offset), size);
+		i = i + size;
 	}
 
     while (i < sgsize) {
@@ -300,9 +298,9 @@ static int load_icode_mapper(u_long va, u_int32_t sgsize,
 			return r;
 		}
 		page_insert(env->env_pgdir, p, va + i, PTE_R);
-		rem = (BY2PG < (sgsize - i) ? BY2PG : sgsize - i);
-		bzero((void *)page2kva(p), rem);
-		i += rem;
+		size = (BY2PG < (sgsize - i) ? BY2PG : sgsize - i);
+		bzero((void *)page2kva(p), size);
+		i += size;
     }
     return 0;
 }
