@@ -22,6 +22,9 @@ void mips_init()
 	/*you may want to create process by MACRO, please read env.h file, in which you will find it. this MACRO is very
 	 * interesting, have fun please*/
 
+	ENV_CREATE_PRIORITY(user_A, 2);
+
+	ENV_CREATE_PRIORITY(user_B, 1);
 
 	
 	trap_init();
