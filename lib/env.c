@@ -139,7 +139,7 @@ env_setup_vm(struct Env *e)
     /* Step 1: Allocate a page for the page directory
      * using a function you completed in the lab2 and add its pp_ref.
      * pgdir is the page directory of Env e, assign value for it. */
-    if ((r = page_alloc(&p))) {
+    if ((r = page_alloc(&p)) < 0) {
         panic("env_setup_vm - page alloc error\n");
         return r;
     }
@@ -150,7 +150,9 @@ env_setup_vm(struct Env *e)
 
 
     /*Step 2: Zero pgdir's field before UTOP. */
-	// 分配页面的时候不是已经zero过了吗
+	for (i = 0; i < PDX(UTOP); i++) {
+		pgdir[i] = 0;
+	}
 
     /*Step 3: Copy kernel's boot_pgdir to pgdir. */
 	for(i = PDX(UTOP); i < 1024; i++) {
@@ -213,6 +215,7 @@ env_alloc(struct Env **new, u_int parent_id)
 	e->env_id = mkenvid(e);
 	e->env_parent_id = parent_id;
 	e->env_status = ENV_RUNNABLE;
+	e->env_runs = 0;
 
 
     /*Step 4: Focus on initializing the sp register and cp0_status of env_tf field, located at this new Env. */
@@ -261,7 +264,7 @@ static int load_icode_mapper(u_long va, u_int32_t sgsize,
 	if (offset > 0) {
 		p = page_lookup(pgdir, va, NULL);
 		if (p == NULL) {
-			if ((r = page_alloc(&p)) != 0) {
+			if ((r = page_alloc(&p)) < 0) {
 				return r;
 			}
 			page_insert(pgdir, p, va, PTE_R);
@@ -275,7 +278,7 @@ static int load_icode_mapper(u_long va, u_int32_t sgsize,
 	// what is this fucking things?
     for (i = rem; i < bin_size; i += rem) {
         /* Hint: You should alloc a new page. */
-		if ((r = page_alloc(&p)) != 0) {
+		if ((r = page_alloc(&p)) < 0) {
 			return r;
 		}
 		page_insert(pgdir, p, va + i, PTE_R);
@@ -351,7 +354,10 @@ load_icode(struct Env *e, u_char *binary, u_int size)
 	// int load_elf(u_char *binary, int size, u_long *entry_point, void *user_data,
 	//		 int (*map)(u_long va, u_int32_t sgsize,
 	//					u_char *bin, u_int32_t bin_size, void *user_data))
-	load_elf(binary, size, &entry_point, (void *)e, load_icode_mapper);
+	r = load_elf(binary, size, &entry_point, (void *)e, load_icode_mapper);
+	if (r < 0) {
+		return;
+	}
 
     /*Step 4:Set CPU's PC register as appropriate value. */
     e->env_tf.pc = entry_point;
@@ -372,7 +378,9 @@ env_create_priority(u_char *binary, int size, int priority)
 {
         struct Env *e;
     /*Step 1: Use env_alloc to alloc a new env. */
-		env_alloc(&e, 0);
+		if (env_alloc(&e, 0) < 0) {
+			return;
+		}
 
     /*Step 2: assign priority to the new env. */
 		e->env_pri = priority;
@@ -380,7 +388,7 @@ env_create_priority(u_char *binary, int size, int priority)
     /*Step 3: Use load_icode() to load the named elf binary,
       and insert it into env_sched_list using LIST_INSERT_HEAD. */
 		load_icode(e, binary, size);
-		LIST_INSERT_HEAD(env_sched_list, e, env_sched_link);
+		LIST_INSERT_HEAD(&env_sched_list[0], e, env_sched_link);
 
 }
 /* Overview:
