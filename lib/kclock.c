@@ -13,6 +13,7 @@ void
 kclock_init(void)
 {
 	// hint: use set_timer()
+	set_timer();
 	
 }
 
