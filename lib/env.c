@@ -65,6 +65,7 @@ void lab3_output(u_int env_id) {
 	struct Env *parent;
 	struct Env *brotherp;
 	u_int a, b, c, d;
+
 	target = envs + ENVX(env_id);
 	a = target->env_parent_id;
 	b = target->env_first_child_id;
@@ -78,7 +79,7 @@ void lab3_output(u_int env_id) {
 		d = target->env_next_brother_id;
 		c = 0;
 		if (brotherp->env_id != env_id) {
-			while (brotherp->env_next_brother_id != 0) {
+			while (1) {
 				if (brotherp->env_next_brother_id == env_id) {
 					c = brotherp->env_id;
 					break;
