@@ -34,7 +34,7 @@ u_int fork(struct Env *e) {
 	struct Env *newe;
 	struct Env *last;
 
-	if (env_alloc(&newe, 0) < 0) {
+	if (env_alloc(&newe, e->env_id) < 0) {
 		return;
 	}
 	newe->env_status = e->env_status;
@@ -43,7 +43,6 @@ u_int fork(struct Env *e) {
 	newe->env_pri = e->env_pri;
 
 	newe->env_id = mkenvid(newe);
-	newe->env_parent_id = e->env_id;
 
 	newe->env_first_child_id = 0;
 	newe->env_next_brother_id = 0;
