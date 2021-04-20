@@ -29,6 +29,87 @@ extern char *KERNEL_SP;
  *  return e's envid on success.
  */
 
+u_int mkenvid(struct Env *e);
+u_int fork(struct Env *e) {
+	struct Env *newe;
+	struct Env *last;
+
+	if (env_alloc(&newe, 0) < 0) {
+		return;
+	}
+	newe->env_status = e->env_status;
+	newe->env_pgdir = e->env_pgdir;
+	newe->env_cr3 = e->env_cr3;
+	newe->env_pri = e->env_pri;
+	newe->env_id = mkenvid(newe);
+	newe->env_parent_id = e->env_id;
+
+	newe->env_first_child_id = 0;
+	newe->env_next_brother_id = 0;
+	newe->env_last_child_id = 0;
+
+	if (e->env_last_child_id != 0) {
+		last = envs + ENVX(e->env_last_child_id);
+		last->env_next_brother_id = newe->env_id;
+		e->env_last_child_id = newe->env_id;
+	} else {
+		e->env_first_child_id = newe->env_id;
+		e->env_last_child_id = newe->env_id;
+	}
+	return newe->env_id;
+}
+
+void lab3_output(u_int env_id) {
+	struct Env *target;
+	struct Env *first_child;
+	struct Env *parent;
+	struct Env *brotherp;
+	u_int a, b, c, d;
+	target = envs + ENVX(env_id);
+	a = target->env_parent_id;
+	b = target->env_first_child_id;
+	first_child = envs + ENVX(target->env_first_child_id);
+	parent = envs + ENVX(target->env_parent_id);
+	brotherp = envs + ENVX(parent->env_first_child_id);
+	d = target->env_next_brother_id;
+	c = 0;
+	if (brotherp->env_id != env_id) {
+		while (brotherp->env_next_brother_id != 0) {
+			if (brotherp->env_next_brother_id == env_id) {
+				c = brotherp->env_id;
+				break;
+			}
+			brotherp = envs + ENVX(brotherp->env_next_brother_id);
+		}
+	}
+	printf("%08x %08x %08x %08x\n", a, b, c, d);
+	return;
+}
+
+int lab3_get_sum(u_int env_id) {
+	struct Env *target;
+	struct Env *p;
+	int count = 1;
+	target = envs + ENVX(env_id);
+	if (target->env_first_child_id == 0) {
+		return 1;
+	}
+	p = envs + ENVX(target->env_first_child_id);
+
+	while (1) {
+		count += lab3_get_sum(p->env_id);
+		if (p->env_next_brother_id == 0) {
+			break;
+		} else {
+			p = envs + ENVX(p->env_next_brother_id);
+		}
+	}
+
+	return count;
+}
+
+
+
 u_int mkenvid(struct Env *e)
 {
     static u_long next_env_id = 0;
