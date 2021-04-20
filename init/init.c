@@ -10,19 +10,30 @@ void my_test() {
 	ENV_CREATE_PRIORITY(user_A, 2);
 	a = LIST_FIRST(env_sched_list);
 	u_int b = fork(a);
+	u_int e = fork(envs + ENVX(b));
+	u_int f = fork(envs + ENVX(b));
 	u_int c = fork(a);
 	u_int d = fork(a);
-	u_int e = fork(envs + ENVX(b));
-	printf("%08x\n", a->env_id);
+	printf("a %08x\n", a->env_id);
 	lab3_output(a->env_id);
-	printf("%08x\n", b);
+	printf("b %08x\n", b);
 	lab3_output(b);
-	printf("%08x\n", c);
+	printf("c %08x\n", c);
 	lab3_output(c);
-	printf("%08x\n", d);
+	printf("d %08x\n", d);
 	lab3_output(d);
-	printf("%08x\n", e);
+	printf("e %08x\n", e);
 	lab3_output(e);
+	printf("f %08x\n", f);
+	lab3_output(f);
+
+	printf("================");
+	printf("a %d\n", lab3_get_sum(a));
+	printf("b %d\n", lab3_get_sum(b));
+	printf("c %d\n", lab3_get_sum(c));
+	printf("d %d\n", lab3_get_sum(d));
+	printf("e %d\n", lab3_get_sum(e));
+	printf("f %d\n", lab3_get_sum(f));
 	
 	
 }

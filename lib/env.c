@@ -41,6 +41,7 @@ u_int fork(struct Env *e) {
 	newe->env_pgdir = e->env_pgdir;
 	newe->env_cr3 = e->env_cr3;
 	newe->env_pri = e->env_pri;
+
 	newe->env_id = mkenvid(newe);
 	newe->env_parent_id = e->env_id;
 
@@ -305,6 +306,7 @@ env_alloc(struct Env **new, u_int parent_id)
 	e->env_parent_id = parent_id;
 	e->env_status = ENV_RUNNABLE;
 	e->env_runs = 0;
+
 	e->env_first_child_id = 0;
 	e->env_last_child_id = 0;
 	e->env_next_brother_id = 0;
