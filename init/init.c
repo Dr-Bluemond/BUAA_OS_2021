@@ -5,6 +5,28 @@
 #include <kclock.h>
 #include <trap.h>
 
+void my_test() {
+	struct Env *a;
+	ENV_CREATE_PRIORITY(user_A, 2);
+	a = LIST_FIRST(env_sched_list);
+	u_int b = fork(a);
+	u_int c = fork(a);
+	u_int d = fork(a);
+	u_int e = fork(envs + ENVX(b));
+	printf("%08x\n", a->env_id);
+	lab3_output(a->env_id);
+	printf("%08x\n", b);
+	lab3_output(b);
+	printf("%08x\n", c);
+	lab3_output(c);
+	printf("%08x\n", d);
+	lab3_output(d);
+	printf("%08x\n", e);
+	lab3_output(e);
+	
+	
+}
+
 void mips_init()
 {
 	printf("init.c:\tmips_init() is called\n");
@@ -15,6 +37,10 @@ void mips_init()
 	
 	env_init();
 	//env_check();
+	my_test();
+	panic("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+	while(1);
+	panic("init.c:\tend of mips_init() reached!");
 
 	/*you can create some processes(env) here. in terms of binary code, please refer current directory/code_a.c
 	 * code_b.c*/

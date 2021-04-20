@@ -304,6 +304,9 @@ env_alloc(struct Env **new, u_int parent_id)
 	e->env_parent_id = parent_id;
 	e->env_status = ENV_RUNNABLE;
 	e->env_runs = 0;
+	e->env_first_child_id = 0;
+	e->env_last_child_id = 0;
+	e->env_next_brother_id = 0;
 
 
     /*Step 4: Focus on initializing the sp register and cp0_status of env_tf field, located at this new Env. */
