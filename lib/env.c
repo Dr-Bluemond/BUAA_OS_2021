@@ -69,17 +69,23 @@ void lab3_output(u_int env_id) {
 	a = target->env_parent_id;
 	b = target->env_first_child_id;
 	first_child = envs + ENVX(target->env_first_child_id);
-	parent = envs + ENVX(target->env_parent_id);
-	brotherp = envs + ENVX(parent->env_first_child_id);
-	d = target->env_next_brother_id;
-	c = 0;
-	if (brotherp->env_id != env_id) {
-		while (brotherp->env_next_brother_id != 0) {
-			if (brotherp->env_next_brother_id == env_id) {
-				c = brotherp->env_id;
-				break;
+	if (a == 0) {
+		c = 0;
+		d = 0;
+	} else {
+		parent = envs + ENVX(target->env_parent_id);
+		brotherp = envs + ENVX(parent->env_first_child_id);
+		d = target->env_next_brother_id;
+		c = 0;
+		if (brotherp->env_id != env_id) {
+			while (brotherp->env_next_brother_id != 0) {
+				if (brotherp->env_next_brother_id == env_id) {
+					c = brotherp->env_id;
+					break;
+				}
+				brotherp = envs + ENVX(brotherp->env_next_brother_id);
 			}
-			brotherp = envs + ENVX(brotherp->env_next_brother_id);
+			
 		}
 	}
 	printf("%08x %08x %08x %08x\n", a, b, c, d);
