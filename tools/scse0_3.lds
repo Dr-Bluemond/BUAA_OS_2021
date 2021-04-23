@@ -3,7 +3,6 @@ ENTRY(_start)
 
 SECTIONS
 {
-  . = 0x80010000;
   
   /*** exercise 3.12 ***/
    . = 0x80000080;
@@ -12,6 +11,7 @@ SECTIONS
    }
 
   
+  . = 0x80010000;
   .text : {
         *(.text)
     }
