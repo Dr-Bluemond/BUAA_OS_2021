@@ -127,7 +127,7 @@ static Pte *boot_pgdir_walk(Pde *pgdir, u_long va, int create)
     /* Hint: Use KADDR and PTE_ADDR to get the page table from page directory
      * entry value. */
 	pgdir_entryp = pgdir + PDX(va);
-	pgtable = KADDR(PTE_ADDR(*pgdir_entryp));
+	pgtable = (Pte *)KADDR(PTE_ADDR(*pgdir_entryp));
 
     /* Step 2: If the corresponding page table is not exist and parameter `create`
      * is set, create one. And set the correct permission bits for this new page
@@ -144,14 +144,14 @@ static Pte *boot_pgdir_walk(Pde *pgdir, u_long va, int create)
 
 
     /* Step 3: Get the page table entry for `va`, and return it. */
-	return pgtable + PTX(va);
+	pgtable_entry = (Pte *)(pgtable + PTX(va));
+	return pgtable_entry;
 }
 
 /*Overview:
  	Map [va, va+size) of virtual address space to physical [pa, pa+size) in the page
 	table rooted at pgdir.
 	Use permission bits `perm|PTE_V` for the entries.
- 	Use permission bits `perm` for the entries.
 
   Pre-Condition:
 	Size is a multiple of BY2PG.*/
@@ -355,7 +355,7 @@ pgdir_walk(Pde *pgdir, u_long va, int create, Pte **ppte)
 
     /* Step 3: Set the page table entry to `*ppte` as return value. */
 
-	pgtable = KADDR(PTE_ADDR(*pgdir_entryp));
+	pgtable = (Pte *)KADDR(PTE_ADDR(*pgdir_entryp));
 	*ppte = pgtable + PTX(va);
 
     return 0;

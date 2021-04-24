@@ -490,7 +490,7 @@ env_run(struct Env *e)
     *  switch the context and save the registers. You can imitate env_destroy() 's behaviors.*/
 
 	if (curenv != NULL) {
-		bcopy(TIMESTACK-sizeof(struct Trapframe), &(curenv->env_tf),
+		bcopy((void *)(TIMESTACK-sizeof(struct Trapframe)), (void *)(&(curenv->env_tf)),
 				sizeof(struct Trapframe));
 		curenv->env_tf.pc = curenv->env_tf.cp0_epc;
 	}
@@ -501,7 +501,7 @@ env_run(struct Env *e)
 
 
     /*Step 3: Use lcontext() to switch to its address space. */
-	lcontext(e->env_pgdir);
+	lcontext((u_int)(e->env_pgdir));
 
 
     /*Step 4: Use env_pop_tf() to restore the environment's
@@ -518,8 +518,8 @@ void env_check()
         struct Env *temp, *pe, *pe0, *pe1, *pe2;
         struct Env_list fl;
         int re = 0;
-     // should be able to allocate three envs
-    pe0 = 0;
+        // should be able to allocate three envs
+	    pe0 = 0;
         pe1 = 0;
         pe2 = 0;
         assert(env_alloc(&pe0, 0) == 0);

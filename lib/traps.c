@@ -55,7 +55,7 @@ page_fault_handler(struct Trapframe *tf)
 	{
 		//panic("fork can't nest!!");
 		tf->regs[29] = tf->regs[29] - sizeof(struct  Trapframe);
-		bcopy(&PgTrapFrame, tf->regs[29], sizeof(struct Trapframe));
+		bcopy(&PgTrapFrame, (void *)(tf->regs[29]), sizeof(struct Trapframe));
 	}
 	else
 	{
@@ -63,7 +63,7 @@ page_fault_handler(struct Trapframe *tf)
 		tf->regs[29] = curenv->env_xstacktop - sizeof(struct  Trapframe);
 //		printf("page_fault_handler(): bcopy(): src:%x\tdes:%x\n",(int)&PgTrapFrame,(int)(curenv->env_xstacktop - sizeof(struct  Trapframe)));
 		
-		bcopy(&PgTrapFrame, curenv->env_xstacktop - sizeof(struct  Trapframe), sizeof(struct Trapframe));
+		bcopy(&PgTrapFrame, (void *)(curenv->env_xstacktop - sizeof(struct  Trapframe)), sizeof(struct Trapframe));
 	}
 //	printf("^^^^cp0_epc:%x\tcurenv->env_pgfault_handler:%x\n",tf->cp0_epc,curenv->env_pgfault_handler);
 
