@@ -74,6 +74,7 @@ LEAF(_start)
     
     /* jump to main */
     jal    main
+	nop
             
 loop:
     j    loop
