@@ -3,7 +3,7 @@
 #include <asm/asm.h>
 #include <trap.h>
 
-.macro STI
+.macro STI // 设置允许执行CP0指令，设置开启中断 Set Interruption
 	mfc0	t0,	CP0_STATUS
 	li	t1, (STATUS_CU0 | 0x1)
 	or	t0, t1
@@ -12,7 +12,7 @@
 .endm
 
 
-.macro CLI
+.macro CLI // 设置允许执行CP0指令，设置禁止中断 Clear Interruption
 	mfc0	t0, CP0_STATUS
 	li	t1, (STATUS_CU0 | 0x1)
 	or	t0, t1
@@ -153,11 +153,11 @@
 
 .macro get_sp
 	mfc0	k1, CP0_CAUSE
-	andi	k1, 0x107C
-	xori	k1, 0x1000
-	bnez	k1, 1f
+	andi	k1, 0x107C // ip4 | ExcCode
+	xori	k1, 0x1000 // ip4
+	bnez	k1, 1f // branch if (ip4 is False) or (ExcCode is not Int)
 	nop
-	li	sp, 0x82000000
+	li	sp, 0x82000000 // execute this if (ip4 is True) and (ExcCode is Int)
 	j	2f
 	nop
 1:
