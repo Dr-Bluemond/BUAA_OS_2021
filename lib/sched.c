@@ -18,11 +18,13 @@
 /*** exercise 3.14 ***/
 void sched_yield(void)
 {
-    static int count = 0; // remaining time slices of current env
+    static int count = 0; // times of interrupted
     static int point = 0; // current env_sched_list index
 	static struct Env *e = NULL;
 	struct Env *tempe;
 	int maxpri = 0;
+
+	count += 1;
     
     /*  hint:
      *  1. if (count==0), insert `e` into `env_sched_list[1-point]`
@@ -66,9 +68,15 @@ void sched_yield(void)
 				 e->env_pri = 0;
 			 }
 		 }
+		 if (FUNC_2(e) == count) {
+			 e->env_status = ENV_NOT_RUNNABLE;
+		 }
 	 }
 	 maxpri = 0;
 	 LIST_FOREACH(tempe, &env_sched_list[0],env_sched_link) {
+		 if (tempe->env_status == ENV_NOT_RUNNABLE && count == (FUNC_2(tempe) + FUNC_3(tempe))) {
+			 tempe->env_status = ENV_RUNNABLE;
+		 }
 	 	if (PRI(tempe) > maxpri && tempe->env_status == ENV_RUNNABLE) {
 	 		e = tempe;
 	 		maxpri = PRI(tempe);
