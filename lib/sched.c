@@ -17,6 +17,8 @@ void sched_yield(void)
     static int count = 0; // remaining time slices of current env
     static int point = 0; // current env_sched_list index
 	static struct Env *e;
+	struct Env *maxe;
+	int maxpri = 0;
     
     /*  hint:
      *  1. if (count==0), insert `e` into `env_sched_list[1-point]`
@@ -30,21 +32,35 @@ void sched_yield(void)
      *  functions or macros below may be used (not all):
      *  LIST_INSERT_TAIL, LIST_REMOVE, LIST_FIRST, LIST_EMPTY
      */
-	if (count <= 0) {
-		do {
-			if (LIST_EMPTY(&env_sched_list[point])) {
-				point = 1 - point;
-			}
-
-			e = LIST_FIRST(&env_sched_list[point]);
-
-			if (e != NULL) {
-				LIST_REMOVE(e, env_sched_link);
-				LIST_INSERT_TAIL(&env_sched_list[1 - point], e, env_sched_link);
-				count = e->env_pri;
-			}
-		} while (e == NULL || e->env_status != ENV_RUNNABLE);
-	}
-	count --;
-	env_run(e);
+// 	if (count <= 0) {
+// 		do {
+// 			if (LIST_EMPTY(&env_sched_list[point])) {
+// 				point = 1 - point;
+// 			}
+// 
+// 			e = LIST_FIRST(&env_sched_list[point]);
+// 
+// 			if (e != NULL) {
+// 				LIST_REMOVE(e, env_sched_link);
+// 				LIST_INSERT_TAIL(&env_sched_list[1 - point], e, env_sched_link);
+// 				count = e->env_pri;
+// 			}
+// 		} while (e == NULL || e->env_status != ENV_RUNNABLE);
+// 	}
+// 	count --;
+	 while (!LIST_EMPTY(&env_sched_list[1])) {
+	 	e = LIST_FIRST(&env_sched_list[1]);
+	 	LIST_REMOVE(e, env_sched_link);
+	 	LIST_INSERT_HEAD(&env_sched_list[0], e, env_sched_link);
+	 	
+	 }
+	 maxpri = 0;
+	 LIST_FOREACH(e, &env_sched_list[0],env_sched_link) {
+	 	if (e->env_pri > maxpri && e->env_status == ENV_RUNNABLE) {
+	 		maxe = e;
+	 		maxpri = e->env_pri;
+	 	}
+	 }
+	
+	env_run(maxe);
 }
