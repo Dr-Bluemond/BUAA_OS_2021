@@ -1,6 +1,10 @@
 #include <env.h>
 #include <pmap.h>
 #include <printf.h>
+#define PRI(X) (((X)->env_pri) & 0xff)
+#define FUNC_1(X) ((((X)->env_pri) >> 8) & 0xff)
+#define FUNC_2(X) ((((X)->env_pri) >> 16) & 0xff)
+#define FUNC_3(X) ((((X)->env_pri) >> 24) & 0xff)
 
 /* Overview:
  *  Implement simple round-robin scheduling.
@@ -16,8 +20,8 @@ void sched_yield(void)
 {
     static int count = 0; // remaining time slices of current env
     static int point = 0; // current env_sched_list index
-	static struct Env *e;
-	struct Env *maxe;
+	static struct Env *e = NULL;
+	struct Env *tempe;
 	int maxpri = 0;
     
     /*  hint:
@@ -48,19 +52,28 @@ void sched_yield(void)
 // 		} while (e == NULL || e->env_status != ENV_RUNNABLE);
 // 	}
 // 	count --;
-	 while (!LIST_EMPTY(&env_sched_list[1])) {
-	 	e = LIST_FIRST(&env_sched_list[1]);
-	 	LIST_REMOVE(e, env_sched_link);
-	 	LIST_INSERT_HEAD(&env_sched_list[0], e, env_sched_link);
+	 while (!LIST_EMPTY(&env_sched_list[1])) { // abandon list[1]
+	 	tempe = LIST_FIRST(&env_sched_list[1]);
+	 	LIST_REMOVE(tempe, env_sched_link);
+	 	LIST_INSERT_HEAD(&env_sched_list[0], tempe, env_sched_link);
 	 	
 	 }
+	 if (e != NULL) {
+		 if (FUNC_1(e) > 0) {
+			 if (PRI(e) >= FUNC_1(e)) {
+				 e->env_pri -= FUNC_1(e);
+			 } else {
+				 e->env_pri = 0;
+			 }
+		 }
+	 }
 	 maxpri = 0;
-	 LIST_FOREACH(e, &env_sched_list[0],env_sched_link) {
-	 	if (e->env_pri > maxpri && e->env_status == ENV_RUNNABLE) {
-	 		maxe = e;
-	 		maxpri = e->env_pri;
+	 LIST_FOREACH(tempe, &env_sched_list[0],env_sched_link) {
+	 	if (PRI(tempe) > maxpri && tempe->env_status == ENV_RUNNABLE) {
+	 		e = tempe;
+	 		maxpri = PRI(tempe);
 	 	}
 	 }
 	
-	env_run(maxe);
+	env_run(e);
 }
