@@ -16,7 +16,8 @@ decode:
 	gcc code_a.c -c -o code_a_x86.o
 	gcc decode.o code_a_x86.o -o decode
 	./decode
-	$(CROSS_COMPILE)objdump -D out.bin > out.dec
+	$(CROSS_COMPILE)objdump -D out.bin > code_a.des
+	rm decode.o code_a_x86.o decode out.bin
 
 include ../include.mk
 
