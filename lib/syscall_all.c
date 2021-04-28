@@ -147,7 +147,7 @@ int sys_mem_alloc(int sysno, u_int envid, u_int va, u_int perm)
 	struct Page *ppage;
 	int ret;
 	
-	if (perm & PTE_COW) {
+	if ((perm & PTE_COW) || (!(perm & PTE_V))) {
 		return -E_INVAL;
 	}
 	if (va >= UTOP) {
@@ -198,7 +198,7 @@ int sys_mem_map(int sysno, u_int srcid, u_int srcva, u_int dstid, u_int dstva,
 	round_srcva = ROUNDDOWN(srcva, BY2PG);
 	round_dstva = ROUNDDOWN(dstva, BY2PG);
     //your code here
-	if (perm & PTE_COW) {
+	if ((perm & PTE_COW) || (!(perm & PTE_V))) {
 		return -E_INVAL;
 	}
 	if (round_srcva >= UTOP || round_dstva >= UTOP) {
