@@ -497,7 +497,7 @@ env_run(struct Env *e)
 
     /*Step 2: Set 'curenv' to the new environment. */
 	curenv = e;
-	//curenv->env_runs++;
+	curenv->env_runs++;
 
 
     /*Step 3: Use lcontext() to switch to its address space. */
