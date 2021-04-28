@@ -64,6 +64,10 @@ u_int sys_getenvid(void)
 /*** exercise 4.6 ***/
 void sys_yield(void)
 {
+	bcopy((void *)KERNEL_SP - sizeof(struct Trapframe), 
+			(void *)TIMESTACK - sizeof(struct Trapframe), 
+			sizeof(struct Trapframe));
+	sched_yield();
 }
 
 /* Overview:
@@ -142,7 +146,26 @@ int sys_mem_alloc(int sysno, u_int envid, u_int va, u_int perm)
 	struct Env *env;
 	struct Page *ppage;
 	int ret;
-	ret = 0;
+	
+	if ((perm & PTE_COW) || (!(perm & PTE_V))) {
+		return -E_INVAL;
+	}
+	if (va >= UTOP) {
+		return -E_INVAL;
+	}
+	ret = envid2env(envid, &env, 1);
+	if (ret < 0) {
+		return ret;
+	}
+	ret = page_alloc(&ppage);
+	if (ret < 0) {
+		return ret;
+	}
+	ret = page_insert(env->env_pgdir, ppage, va, perm);
+	if (ret < 0) {
+		return ret;
+	}
+	return 0;
 
 }
 
@@ -174,10 +197,34 @@ int sys_mem_map(int sysno, u_int srcid, u_int srcva, u_int dstid, u_int dstva,
 	ret = 0;
 	round_srcva = ROUNDDOWN(srcva, BY2PG);
 	round_dstva = ROUNDDOWN(dstva, BY2PG);
-
     //your code here
+	if ((perm & PTE_COW) || (!(perm & PTE_V))) {
+		return -E_INVAL;
+	}
+	if (round_srcva >= UTOP || round_dstva >= UTOP) {
+		return -E_INVAL;
+	}
+	ret = envid2env(srcid, &srcenv, 1);
+	if (ret < 0) {
+		return ret;
+	}
+	ret = envid2env(dstid, &dstenv, 1);
+	if (ret < 0) {
+		return ret;
+	}
+	ppage = page_lookup(srcenv->env_pgdir, round_srcva, &ppte);
+	if (ppage == NULL) {
+		return -E_INVAL;
+	}
+	if (((*ppte | PTE_R) == 0) && (perm | PTE_R)) {
+		return -E_INVAL;
+	}
+	page_insert(dstenv->env_pgdir, ppage, round_dstva, perm);
+	if (ret < 0) {
+		return ret;
+	}
 
-	return ret;
+	return 0;
 }
 
 /* Overview:
@@ -196,7 +243,17 @@ int sys_mem_unmap(int sysno, u_int envid, u_int va)
 	int ret;
 	struct Env *env;
 
-	return ret;
+	if (va >= UTOP) {
+		return -E_INVAL;
+	}
+
+	ret = envid2env(envid, &env, 1);
+	if (ret < 0) {
+		return ret;
+	}
+	page_remove(env->env_pgdir, va);
+
+	return 0;
 	//	panic("sys_mem_unmap not implemented");
 }
 
@@ -293,9 +350,14 @@ void sys_panic(int sysno, char *msg)
  * 	This syscall will set the current process's status to 
  * ENV_NOT_RUNNABLE, giving up cpu. 
  */
+	// void sys_ipc_recv(int sysno,u_int dstva)函数首先要将env_ipc_recving设置为1，表明该进程准备接受其它进程的消息了。之后修改env_ipc_dstva，接着阻塞当前进程，即把当前进程的状态置为不可运行（ENV_NOT_RUNNABLE），之后放弃CPU（调用相关函数重新进行调度）。
 /*** exercise 4.7 ***/
 void sys_ipc_recv(int sysno, u_int dstva)
 {
+	curenv->env_ipc_recving = 1;
+	curenv->env_ipc_dstva = dstva;
+	curenv->env_status = ENV_NOT_RUNNABLE;
+	sys_yield();
 }
 
 /* Overview:
@@ -315,6 +377,7 @@ void sys_ipc_recv(int sysno, u_int dstva)
  *
  * Hint: the only function you need to call is envid2env.
  */
+// int sys_ipc_can_send(int sysno,u_int envid, u_int value, u_int srcva, u_int perm)函数用于发送消息。根据envid找到相应进程，如果指定进程为可接收状态(考虑env_ipc_recving)，则发送成功，之后清除接收进程的接收状态，修改进程控制块中相应域的值，使其可运行(ENV_RUNNABLE)，函数返回0。否则，函数返回_E_IPC_NOT_RECV。
 /*** exercise 4.7 ***/
 int sys_ipc_can_send(int sysno, u_int envid, u_int value, u_int srcva,
 					 u_int perm)
@@ -323,7 +386,25 @@ int sys_ipc_can_send(int sysno, u_int envid, u_int value, u_int srcva,
 	int r;
 	struct Env *e;
 	struct Page *p;
+	r = envid2env(envid, &e, 0);
+	if (r < 0) {
+		return r;
+	}
+	if (e->env_ipc_recving == 0) {
+		return -E_IPC_NOT_RECV;
+	}
+	e->env_ipc_recving = 0;
+	e->env_ipc_from = curenv->env_id;
+	e->env_ipc_value = value;
+	e->env_ipc_perm = perm;
+	e->env_status = ENV_RUNNABLE;
 
-	return 0;
+	if (srcva != 0) {
+		p = page_lookup(curenv->env_pgdir, srcva, NULL);
+		if (p == NULL) {
+			return -E_INVAL;
+		}
+		page_insert(e->env_pgdir, p, e->env_ipc_dstva, perm);
+	}
 }
 
