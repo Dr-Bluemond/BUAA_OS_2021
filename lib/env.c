@@ -273,9 +273,7 @@ static int load_icode_mapper(u_long va, u_int32_t sgsize,
 		
 	}
 
-	// what is this fucking things?
     for (i = size; i < bin_size; i += size) {
-        /* Hint: You should alloc a new page. */
 		if ((r = page_alloc(&p)) < 0) {
 			return r;
 		}
@@ -283,8 +281,10 @@ static int load_icode_mapper(u_long va, u_int32_t sgsize,
 		size = (BY2PG < (bin_size-i)) ? BY2PG : (bin_size - i);
 		bcopy((void *)(bin + i), (void *)page2kva(p), size);
     }
+
     /*Step 2: alloc pages to reach `sgsize` when `bin_size` < `sgsize`.
     * hint: variable `i` has the value of `bin_size` now! */
+
 	offset = i-ROUNDDOWN(i,BY2PG);
 	if (offset > 0) {
 		size = BY2PG - offset;
