@@ -192,7 +192,6 @@ int sys_mem_map(int sysno, u_int srcid, u_int srcva, u_int dstid, u_int dstva,
 	struct Env *dstenv;
 	struct Page *ppage;
 	Pte *ppte;
-	return 0;
 
 	ppage = NULL;
 	ret = 0;
@@ -241,6 +240,7 @@ int sys_mem_map(int sysno, u_int srcid, u_int srcva, u_int dstid, u_int dstva,
 int sys_mem_unmap(int sysno, u_int envid, u_int va)
 {
 	// Your code here.
+	return 0;
 	int ret;
 	struct Env *env;
 
