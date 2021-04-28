@@ -412,5 +412,6 @@ int sys_ipc_can_send(int sysno, u_int envid, u_int value, u_int srcva,
 //		}
 //		page_insert(e->env_pgdir, p, e->env_ipc_dstva, perm);
 //	}
+	return 0;
 }
 
