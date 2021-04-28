@@ -64,7 +64,6 @@ u_int sys_getenvid(void)
 /*** exercise 4.6 ***/
 void sys_yield(void)
 {
-	return 0;
 	bcopy((void *)KERNEL_SP - sizeof(struct Trapframe), 
 			(void *)TIMESTACK - sizeof(struct Trapframe), 
 			sizeof(struct Trapframe));
