@@ -350,9 +350,9 @@ void sys_panic(int sysno, char *msg)
  * 	This syscall will set the current process's status to 
  * ENV_NOT_RUNNABLE, giving up cpu. 
  */
-	// void sys_ipc_recv(int sysno,u_int dstva)函数首先要将env_ipc_recving设置为1，表明该进程准备接受其它进程的消息了。之后修改env_ipc_dstva，接着阻塞当前进程，即把当前进程的状态置为不可运行（ENV_NOT_RUNNABLE），之后放弃CPU（调用相关函数重新进行调度）。
 /*** exercise 4.7 ***/
 void sys_ipc_recv(int sysno, u_int dstva)
+{
 	if (dstva >= UTOP) {
 		return;
 	}
@@ -379,7 +379,6 @@ void sys_ipc_recv(int sysno, u_int dstva)
  *
  * Hint: the only function you need to call is envid2env.
  */
-// int sys_ipc_can_send(int sysno,u_int envid, u_int value, u_int srcva, u_int perm)函数用于发送消息。根据envid找到相应进程，如果指定进程为可接收状态(考虑env_ipc_recving)，则发送成功，之后清除接收进程的接收状态，修改进程控制块中相应域的值，使其可运行(ENV_RUNNABLE)，函数返回0。否则，函数返回_E_IPC_NOT_RECV。
 /*** exercise 4.7 ***/
 int sys_ipc_can_send(int sysno, u_int envid, u_int value, u_int srcva,
 					 u_int perm)
