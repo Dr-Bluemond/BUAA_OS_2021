@@ -23,7 +23,10 @@ NESTED(handle_sys,TF_SIZE, sp)
 IS_BD:
 	sw		t0, TF_EPC(sp)
 
+
+
     // TODO: Copy the syscall number into $a0.
+
 	lw a0, TF_REG4(sp)
     
     addiu   a0, a0, -__SYSCALL_BASE     // a0 <- relative syscall number
@@ -42,10 +45,6 @@ IS_BD:
 	lw a2, TF_REG6(sp)
 	lw a3, TF_REG7(sp)
 	addiu sp, sp, -24
-	sw a0, 0(sp)
-	sw a1, 4(sp)
-	sw a2, 8(sp)
-	sw a3, 12(sp)
 	sw t3, 16(sp)
 	sw t4, 20(sp)
     
@@ -54,6 +53,7 @@ IS_BD:
     nop
     
     // TODO: Resume current kernel stack
+
 	addiu sp, sp, 24
     
     sw      v0, TF_REG2(sp)             // Store return value of function sys_* (in $v0) into trapframe

@@ -6,7 +6,7 @@
 LEAF(msyscall)
     // TODO: you JUST need to execute a `syscall` instruction and return from msyscall
 	syscall
-	j ra
+	jr ra
 	nop
 
 END(msyscall)
