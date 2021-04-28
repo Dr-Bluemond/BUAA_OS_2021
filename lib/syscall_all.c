@@ -353,7 +353,9 @@ void sys_panic(int sysno, char *msg)
 	// void sys_ipc_recv(int sysno,u_int dstva)函数首先要将env_ipc_recving设置为1，表明该进程准备接受其它进程的消息了。之后修改env_ipc_dstva，接着阻塞当前进程，即把当前进程的状态置为不可运行（ENV_NOT_RUNNABLE），之后放弃CPU（调用相关函数重新进行调度）。
 /*** exercise 4.7 ***/
 void sys_ipc_recv(int sysno, u_int dstva)
-{
+	if (dstva >= UTOP) {
+		return;
+	}
 	curenv->env_ipc_recving = 1;
 	curenv->env_ipc_dstva = dstva;
 	curenv->env_status = ENV_NOT_RUNNABLE;
@@ -385,6 +387,11 @@ int sys_ipc_can_send(int sysno, u_int envid, u_int value, u_int srcva,
 
 	int r;
 	struct Env *e;
+
+	if (srcva >= UTOP) {
+		return -E_INVAL;
+	}
+
 	struct Page *p;
 	r = envid2env(envid, &e, 0);
 	if (r < 0) {
