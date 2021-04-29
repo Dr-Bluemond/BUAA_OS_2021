@@ -204,11 +204,11 @@ int sys_mem_map(int sysno, u_int srcid, u_int srcva, u_int dstid, u_int dstva,
 	if ((perm & PTE_COW) || (!(perm & PTE_V))) {
 		return -E_INVAL;
 	}
-	ret = envid2env(srcid, &srcenv, 1);
+	ret = envid2env(srcid, &srcenv, 0);
 	if (ret < 0) {
 		return ret;
 	}
-	ret = envid2env(dstid, &dstenv, 1);
+	ret = envid2env(dstid, &dstenv, 0);
 	if (ret < 0) {
 		return ret;
 	}
@@ -247,7 +247,7 @@ int sys_mem_unmap(int sysno, u_int envid, u_int va)
 		return -E_INVAL;
 	}
 
-	ret = envid2env(envid, &env, 1);
+	ret = envid2env(envid, &env, 0);
 	if (ret < 0) {
 		return ret;
 	}
