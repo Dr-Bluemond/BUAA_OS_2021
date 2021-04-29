@@ -14,13 +14,13 @@ NESTED(handle_sys,TF_SIZE, sp)
     // TODO: Fetch EPC from Trapframe, calculate a proper value and store it back to trapframe.
 
 	lw		t0, TF_EPC(sp)
-	lw		t1, TF_CAUSE(sp)
-	lui		t2, 0x8000
-	and		t1, t1, t2
-	bnez	t1, IS_BD
-	nop
+//	lw		t1, TF_CAUSE(sp)
+//	lui		t2, 0x8000
+//	and		t1, t1, t2
+//	bnez	t1, IS_BD
+//	nop
 	addiu	t0, t0, 4
-IS_BD:
+//IS_BD:
 	sw		t0, TF_EPC(sp)
 
 
