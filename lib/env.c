@@ -507,7 +507,7 @@ env_run(struct Env *e)
     /*Step 4: Use env_pop_tf() to restore the environment's
      * environment   registers and return to user mode.
      *
-     * Hint: You should use GET_ENV_ASID there. Think why?
+     * Hint: You should use GET_ENV_ASID there. Think why? because of the page table must be invalid
      * (read <see mips run linux>, page 135-144)
      */
 	env_pop_tf(&(e->env_tf), GET_ENV_ASID(e->env_id));
