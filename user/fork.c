@@ -83,26 +83,27 @@ static void
 pgfault(u_int va)
 {
 	u_int *tmp;
+	u_long perm;
+	perm = (*vpt)[VPN(va)] & (BY2PG - 1);
+	perm = perm & (~PTE_COW);
 	tmp = (u_int *)USTACKTOP;
 	int r;
-	Pte pte;
 	//	writef("fork.c:pgfault():\t va:%x\n",va);
-	pte = (*vpt)[VPN(va)];
-	if ((pte & PTE_COW) == 0) {
+	if ((perm & PTE_COW) == 0) {
 		user_panic("this is not a COW page");
 	}
     
     //map the new page at a temporary place
-	r = syscall_mem_alloc(0, (u_int)tmp, PTE_V|PTE_R);
+	r = syscall_mem_alloc(0, (u_int)tmp, perm);
 	if (r < 0) {
 		user_panic("failed to mem alloc");
 	}
 
 	//copy the content
-	user_bcopy((void *)va, tmp, BY2PG);
+	user_bcopy(ROUNDDOWN(va, BY2PG), tmp, BY2PG);
 	
     //map the page on the appropriate place
-	r = syscall_mem_map(0, tmp, 0, va, pte & (~PTE_COW) & (BY2PG - 1));
+	r = syscall_mem_map(0, tmp, 0, va, perm);
 	if (r < 0) {
 		user_panic("failed to mem map");
 	}

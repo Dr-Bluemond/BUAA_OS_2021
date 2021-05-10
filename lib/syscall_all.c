@@ -116,7 +116,7 @@ int sys_set_pgfault_handler(int sysno, u_int envid, u_int func, u_int xstacktop)
 	// Your code here.
 	struct Env *env;
 	int ret;
-	ret = envid2env(envid, &env, 1);
+	ret = envid2env(envid, &env, 0);
 	if (ret < 0) {
 		return ret;
 	}
@@ -288,10 +288,10 @@ int sys_env_alloc(void)
 	if (r < 0) {
 		return r;
 	}
-	e->env_status = ENV_NOT_RUNNABLE;
 	bcopy((void *)KERNEL_SP - sizeof(struct Trapframe), (void *)&e->env_tf, sizeof(struct Trapframe));
 	e->env_tf.pc = e->env_tf.cp0_epc;
 	e->env_tf.regs[2] = 0; // child process returns 0
+	e->env_status = ENV_NOT_RUNNABLE;
 	e->env_pri = curenv->env_pri;
 
 
@@ -317,14 +317,15 @@ int sys_set_env_status(int sysno, u_int envid, u_int status)
 	// Your code here.
 	struct Env *env;
 	int ret;
-	ret = envid2env(envid, &env, 1);
-	if (ret < 0) {
-		return ret;
-	}
+
+	if (status != ENV_RUNNABLE && status != ENV_NOT_RUNNABLE && status != ENV_FREE) return -E_INVAL;
+	ret = envid2env(envid, &env, 0);
+	if (ret) return ret;
+	if (env->env_status != ENV_RUNNABLE && status == ENV_RUNNABLE) LIST_INSERT_HEAD(&env_sched_list[0], env, env_sched_link);
+	if (env->env_status == ENV_RUNNABLE && status != ENV_RUNNABLE) LIST_REMOVE(env, env_sched_link);
 	env->env_status = status;
-	if (status == ENV_RUNNABLE) {
-		LIST_INSERT_HEAD(env_sched_list, env, env_sched_link);
-	}
+
+	return 0;
 
 	return 0;
 }
