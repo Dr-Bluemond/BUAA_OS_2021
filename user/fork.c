@@ -92,6 +92,7 @@ pgfault(u_int va)
 	if ((perm & PTE_COW) == 0) {
 		user_panic("this is not a COW page");
 	}
+
 	perm = perm & (~PTE_COW);
     
     //map the new page at a temporary place
@@ -187,7 +188,6 @@ fork(void)
 		for (i = 0; i < VPN(USTACKTOP); i++) {
 			if ((((Pde *)(*vpd))[i >> 10] & PTE_V) && (((Pte *)(*vpt))[i] & PTE_V)) {
 				duppage(newenvid, i);
-				writef("mapping %d\n", i);
 			}
 		}
 //		for (i = 0; i < PDX(USTACKTOP); i++) {
