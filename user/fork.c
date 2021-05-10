@@ -82,16 +82,17 @@ void user_bzero(void *v, u_int n)
 static void
 pgfault(u_int va)
 {
+
 	u_int *tmp;
 	u_long perm;
-	perm = (*vpt)[VPN(va)] & (BY2PG - 1);
-	perm = perm & (~PTE_COW);
+	perm = ((Pte *)(*vpt))[VPN(va)] & (BY2PG - 1);
 	tmp = (u_int *)USTACKTOP;
 	int r;
-	//	writef("fork.c:pgfault():\t va:%x\n",va);
+	//writef("fork.c:pgfault():\t va:%x\n",va);
 	if ((perm & PTE_COW) == 0) {
 		user_panic("this is not a COW page");
 	}
+	perm = perm & (~PTE_COW);
     
     //map the new page at a temporary place
 	r = syscall_mem_alloc(0, (u_int)tmp, perm);
@@ -177,26 +178,30 @@ fork(void)
 
 	//alloc a new alloc
 	newenvid = syscall_env_alloc();
+
+	if (newenvid == 0) {
+		env = envs + ENVX(syscall_getenvid());
+	}
+	
 	if (newenvid) {
-//		for (i = 0; i < VPN(USTACKTOP); i++) {
-//			if (((*vpd)[i >> 10] & PTE_V) && ((*vpt)[i] & PTE_V)) duppage(newenvid, i);
-//		}
-		for (i = 0; i < PDX(USTACKTOP); i++) {
-			if (((*vpd)[i] & PTE_V) == 0) continue;
-			for (j = 0; j < PTE2PT; j++) {
-				if ((*vpt)[(i << 10) + j] & PTE_V) {
-					duppage(newenvid, (i << 10) + j);
-					writef("mapping %d\n", (i << 10) + j);
-				}
+		for (i = 0; i < VPN(USTACKTOP); i++) {
+			if ((((Pde *)(*vpd))[i >> 10] & PTE_V) && (((Pte *)(*vpt))[i] & PTE_V)) {
+				duppage(newenvid, i);
+				writef("mapping %d\n", i);
 			}
 		}
+//		for (i = 0; i < PDX(USTACKTOP); i++) {
+//			if ((((Pde *)(*vpd))[i] & PTE_V) == 0) continue;
+//			for (j = 0; j < PTE2PT; j++) {
+//				if (((Pte *)(*vpt))[(i << 10) + j] & PTE_V) {
+//					duppage(newenvid, (i << 10) + j);
+//				}
+//			}
+//		}
 		syscall_mem_alloc(newenvid, UXSTACKTOP - BY2PG, PTE_V|PTE_R);
 		syscall_set_pgfault_handler(newenvid, __asm_pgfault_handler, UXSTACKTOP);
 		syscall_set_env_status(newenvid, ENV_RUNNABLE);
-	} else {
-		env = envs + ENVX(syscall_getenvid());
 	}
-
 
 	return newenvid;
 }

@@ -46,5 +46,6 @@ void sched_yield(void)
 		} while (e == NULL || e->env_status != ENV_RUNNABLE);
 	}
 	count --;
+	printf("scheduling %d\n", e->env_id);
 	env_run(e);
 }

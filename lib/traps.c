@@ -53,6 +53,9 @@ page_fault_handler(struct Trapframe *tf)
     struct Trapframe PgTrapFrame;
     extern struct Env *curenv;
 
+	//panic("page_fault_handler called\n");
+
+
     bcopy(tf, &PgTrapFrame, sizeof(struct Trapframe));
 
     if (tf->regs[29] >= (curenv->env_xstacktop - BY2PG) &&

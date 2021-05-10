@@ -209,9 +209,6 @@ int sys_mem_map(int sysno, u_int srcid, u_int srcva, u_int dstid, u_int dstva,
 	if (round_srcva >= UTOP || round_dstva >= UTOP) {
 		return -E_INVAL;
 	}
-	if ((perm & PTE_COW) || (!(perm & PTE_V))) {
-		return -E_INVAL;
-	}
 	ret = envid2env(srcid, &srcenv, 0);
 	if (ret < 0) {
 		return ret;
@@ -288,7 +285,7 @@ int sys_env_alloc(void)
 	if (r < 0) {
 		return r;
 	}
-	bcopy((void *)KERNEL_SP - sizeof(struct Trapframe), (void *)&e->env_tf, sizeof(struct Trapframe));
+	bcopy((void *)KERNEL_SP - sizeof(struct Trapframe), (void *)&(e->env_tf), sizeof(struct Trapframe));
 	e->env_tf.pc = e->env_tf.cp0_epc;
 	e->env_tf.regs[2] = 0; // child process returns 0
 	e->env_status = ENV_NOT_RUNNABLE;
