@@ -116,7 +116,12 @@ int sys_set_pgfault_handler(int sysno, u_int envid, u_int func, u_int xstacktop)
 	// Your code here.
 	struct Env *env;
 	int ret;
-
+	ret = envid2env(envid, &env, 1);
+	if (ret < 0) {
+		return ret;
+	}
+	env->env_pgfault_handler = func;
+	env->env_xstacktop = xstacktop;
 
 	return 0;
 	//	panic("sys_set_pgfault_handler not implemented");
@@ -146,6 +151,7 @@ int sys_mem_alloc(int sysno, u_int envid, u_int va, u_int perm)
 	struct Env *env;
 	struct Page *ppage;
 	int ret;
+	perm = perm & (BY2PG - 1);
 	
 	if (va >= UTOP) {
 		return -E_INVAL;
@@ -192,6 +198,8 @@ int sys_mem_map(int sysno, u_int srcid, u_int srcva, u_int dstid, u_int dstva,
 	struct Env *dstenv;
 	struct Page *ppage;
 	Pte *ppte;
+
+	perm = perm & (BY2PG - 1);
 
 	ppage = NULL;
 	ret = 0;
@@ -309,9 +317,16 @@ int sys_set_env_status(int sysno, u_int envid, u_int status)
 	// Your code here.
 	struct Env *env;
 	int ret;
+	ret = envid2env(envid, &env, 1);
+	if (ret < 0) {
+		return ret;
+	}
+	env->env_status = status;
+	if (status == ENV_RUNNABLE) {
+		LIST_INSERT_HEAD(env_sched_list, env, env_sched_link);
+	}
 
 	return 0;
-	//	panic("sys_env_set_status not implemented");
 }
 
 /* Overview:
@@ -397,6 +412,8 @@ int sys_ipc_can_send(int sysno, u_int envid, u_int value, u_int srcva,
 	int r;
 	struct Env *e;
 	struct Page *p;
+
+	perm = perm & (BY2PG - 1);
 
 	if (srcva >= UTOP) {
 		return -E_INVAL;

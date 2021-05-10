@@ -83,15 +83,36 @@ static void
 pgfault(u_int va)
 {
 	u_int *tmp;
+	tmp = (u_int *)USTACKTOP;
+	int r;
+	Pte pte;
 	//	writef("fork.c:pgfault():\t va:%x\n",va);
+	pte = (*vpt)[VPN(va)];
+	if ((pte & PTE_COW) == 0) {
+		user_panic("this is not a COW page");
+	}
     
     //map the new page at a temporary place
+	r = syscall_mem_alloc(0, (u_int)tmp, PTE_V|PTE_R);
+	if (r < 0) {
+		user_panic("failed to mem alloc");
+	}
 
 	//copy the content
+	user_bcopy((void *)va, tmp, BY2PG);
 	
     //map the page on the appropriate place
+	r = syscall_mem_map(0, tmp, 0, va, pte & (~PTE_COW) & (BY2PG - 1));
+	if (r < 0) {
+		user_panic("failed to mem map");
+	}
 	
     //unmap the temporary place
+	r = syscall_mem_unmap(0, tmp);
+	if (r < 0) {
+		user_panic("failed to mem unmap");
+	}
+
 	
 }
 
@@ -117,8 +138,16 @@ duppage(u_int envid, u_int pn)
 {
 	u_int addr;
 	u_int perm;
+	int flag = 0;
 
-	//	user_panic("duppage not implemented");
+	addr = pn << PGSHIFT;
+	perm = (*vpt)[pn] & (BY2PG - 1);
+	if ((perm & PTE_R) && !(perm & PTE_LIBRARY)) {
+		perm |= PTE_COW;
+		flag = 1;
+	}
+	syscall_mem_map(0, addr, envid, addr, perm);
+	if (flag) syscall_mem_map(0, addr, 0, addr, perm);
 }
 
 /* Overview:
@@ -139,12 +168,33 @@ fork(void)
 	u_int newenvid;
 	extern struct Env *envs;
 	extern struct Env *env;
-	u_int i;
+	u_int i, j;
 
 
 	//The parent installs pgfault using set_pgfault_handler
+	set_pgfault_handler(pgfault);
 
 	//alloc a new alloc
+	newenvid = syscall_env_alloc();
+	if (newenvid) {
+//		for (i = 0; i < VPN(USTACKTOP); i++) {
+//			if (((*vpd)[i >> 10] & PTE_V) && ((*vpt)[i] & PTE_V)) duppage(newenvid, i);
+//		}
+		for (i = 0; i < PDX(USTACKTOP); i++) {
+			if (((*vpd)[i] & PTE_V) == 0) continue;
+			for (j = 0; j < PTE2PT; j++) {
+				if ((*vpt)[(i << 10) + j] & PTE_V) {
+					duppage(newenvid, (i << 10) + j);
+					writef("mapping %d\n", (i << 10) + j);
+				}
+			}
+		}
+		syscall_mem_alloc(newenvid, UXSTACKTOP - BY2PG, PTE_V|PTE_R);
+		syscall_set_pgfault_handler(newenvid, __asm_pgfault_handler, UXSTACKTOP);
+		syscall_set_env_status(newenvid, ENV_RUNNABLE);
+	} else {
+		env = envs + ENVX(syscall_getenvid());
+	}
 
 
 	return newenvid;
