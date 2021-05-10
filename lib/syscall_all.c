@@ -209,6 +209,9 @@ int sys_mem_map(int sysno, u_int srcid, u_int srcva, u_int dstid, u_int dstva,
 	if (round_srcva >= UTOP || round_dstva >= UTOP) {
 		return -E_INVAL;
 	}
+	if (!(perm & PTE_V)) {
+		return -E_INVAL;
+	}
 	ret = envid2env(srcid, &srcenv, 0);
 	if (ret < 0) {
 		return ret;
