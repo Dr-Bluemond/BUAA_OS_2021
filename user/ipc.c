@@ -18,7 +18,7 @@ ipc_send(u_int whom, u_int val, u_int transfer_id, u_int srcva, u_int perm)
 	struct Env e;
 
 	if (transfer_id == -1) {
-		while ((r = syscall_ipc_can_send(whom, val, srcva, perm)) == -E_IPC_NOT_RECV) {
+		while ((r = syscall_ipc_can_send(whom, val, -1, srcva, perm)) == -E_IPC_NOT_RECV) {
 			syscall_yield();
 			//writef("QQ");
 		}
@@ -28,10 +28,7 @@ ipc_send(u_int whom, u_int val, u_int transfer_id, u_int srcva, u_int perm)
 		}
 
 	} else {
-		// r = envid2env(transfer_id, &e, 0);
-		// if (r < 0) return;
-		// e.env_ipc_destination_id;
-		while ((r = syscall_ipc_can_send(transfer_id, val, srcva, perm)) == -E_IPC_NOT_RECV) {
+		while ((r = syscall_ipc_can_send(transfer_id, val, whom, srcva, perm)) == -E_IPC_NOT_RECV) {
 			syscall_yield();
 			//writef("QQ");
 		}

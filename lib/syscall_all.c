@@ -406,7 +406,7 @@ void sys_ipc_recv(int sysno, u_int dstva)
  * Hint: the only function you need to call is envid2env.
  */
 /*** exercise 4.7 ***/
-int sys_ipc_can_send(int sysno, u_int envid, u_int value, u_int srcva,
+int sys_ipc_can_send(int sysno, u_int envid, u_int value, u_int dest, u_int srcva,
 					 u_int perm)
 {
 
@@ -432,6 +432,7 @@ int sys_ipc_can_send(int sysno, u_int envid, u_int value, u_int srcva,
 	e->env_ipc_value = value;
 	e->env_ipc_perm = perm;
 	e->env_status = ENV_RUNNABLE;
+	e->env_ipc_destination_id = dest;
 
 	if (srcva != 0) {
 		p = page_lookup(curenv->env_pgdir, srcva, NULL);

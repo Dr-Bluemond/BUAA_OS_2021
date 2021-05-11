@@ -71,9 +71,9 @@ syscall_panic(char *msg)
 }
 
 int
-syscall_ipc_can_send(u_int envid, u_int value, u_int srcva, u_int perm)
+syscall_ipc_can_send(u_int envid, u_int value, u_int dest, u_int srcva, u_int perm)
 {
-	return msyscall(SYS_ipc_can_send, envid, value, srcva, perm, 0);
+	return msyscall(SYS_ipc_can_send, envid, value, dest, srcva, perm);
 }
 
 void
