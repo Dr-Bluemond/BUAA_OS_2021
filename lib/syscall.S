@@ -35,26 +35,44 @@ NESTED(handle_sys,TF_SIZE, sp)
     addu    t1, t1, t0                  // t1 <- table entry of specific syscall
     lw      t2, 0(t1)                   // t2 <- function entry of specific syscall
 
+	lw s0, TF_REG5(sp) // s0 is the size of stack
+	addiu s0, s0, 1
+	sll s0, s0, 2
+
     lw      t0, TF_REG29(sp)            // t0 <- user's stack pointer
 	lw      a0, TF_REG4(sp)
 	lw      a1, TF_REG6(sp)
 	lw      a2, TF_REG7(sp)
 	lw      a3, 16(t0)
-    lw      t3, 20(t0)                  // t3 <- the 4th argument of msyscall
-    lw      t4, 24(t0)                  // t4 <- the 5th argument of msyscall
-    lw      t5, 28(t0)                  // t5 <- the 6th argument of msyscall
-    lw      t6, 32(t0)                  // t6 <- the 7th argument of msyscall
-    lw      t7, 36(t0)                  // t7 <- the 8th argument of msyscall
-    lw      t8, 40(t0)                  // t8 <- the 9th argument of msyscall
 
-    // TODO: Allocate a space of six arguments on current kernel stack and copy the six arguments to proper location
-	addiu sp, sp, -40
-	sw t3, 16(sp)
-	sw t4, 20(sp)
-	sw t5, 24(sp)
-	sw t6, 28(sp)
-	sw t7, 32(sp)
-	sw t8, 36(sp)
+	subu sp, sp, s0
+
+ 	li t9, 0
+ foo:
+ 	beq t9, s0, bar
+ 	addu t3, t0, t9
+ 	addiu t3, t3, 4
+ 	lw t5, 0(t3)
+ 	addu t3, sp, t9
+ 	sw t5, 0(t3)
+ 	addu t9, t9, 4
+	j foo
+ bar:
+
+//    lw      t3, 20(t0)                  // t3 <- the 4th argument of msyscall
+//    lw      t4, 24(t0)                  // t4 <- the 5th argument of msyscall
+//    lw      t5, 28(t0)                  // t5 <- the 6th argument of msyscall
+//    lw      t6, 32(t0)                  // t6 <- the 7th argument of msyscall
+//    lw      t7, 36(t0)                  // t7 <- the 8th argument of msyscall
+//    lw      t8, 40(t0)                  // t8 <- the 9th argument of msyscall
+//
+//    // TODO: Allocate a space of six arguments on current kernel stack and copy the six arguments to proper location
+//	sw t3, 16(sp)
+//	sw t4, 20(sp)
+//	sw t5, 24(sp)
+//	sw t6, 28(sp)
+//	sw t7, 32(sp)
+//	sw t8, 36(sp)
     
     
     jalr    t2                          // Invoke sys_* function
@@ -62,7 +80,7 @@ NESTED(handle_sys,TF_SIZE, sp)
     
     // TODO: Resume current kernel stack
 
-	addiu sp, sp, 40
+	addu sp, sp, s0
     
     sw      v0, TF_REG2(sp)             // Store return value of function sys_* (in $v0) into trapframe
 
