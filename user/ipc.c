@@ -12,17 +12,34 @@ extern struct Env *env;
 //
 // Hint: use syscall_yield() to be CPU-friendly.
 void
-ipc_send(u_int whom, u_int val, u_int srcva, u_int perm)
+ipc_send(u_int whom, u_int val, u_int transfer_id, u_int srcva, u_int perm)
 {
 	int r;
+	struct Env e;
 
-	while ((r = syscall_ipc_can_send(whom, val, srcva, perm)) == -E_IPC_NOT_RECV) {
-		syscall_yield();
-		//writef("QQ");
-	}
+	if (transfer_id == -1) {
+		while ((r = syscall_ipc_can_send(whom, val, srcva, perm)) == -E_IPC_NOT_RECV) {
+			syscall_yield();
+			//writef("QQ");
+		}
 
-	if (r == 0) {
-		return;
+		if (r == 0) {
+			return;
+		}
+
+	} else {
+		// r = envid2env(transfer_id, &e, 0);
+		// if (r < 0) return;
+		// e.env_ipc_destination_id;
+		while ((r = syscall_ipc_can_send(transfer_id, val, srcva, perm)) == -E_IPC_NOT_RECV) {
+			syscall_yield();
+			//writef("QQ");
+		}
+
+		if (r == 0) {
+			return;
+		}
+
 	}
 
 	user_panic("error in ipc_send: %d", r);

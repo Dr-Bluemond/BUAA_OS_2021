@@ -19,7 +19,7 @@ fsipc(u_int type, void *fsreq, u_int dstva, u_int *perm)
 	u_int whom;
 	int r;
 	//we file system no. is 000000000000000000
-	ipc_send(envs[1].env_id, type, (u_int)fsreq, PTE_V | PTE_R);
+//	ipc_send(envs[1].env_id, type, (u_int)fsreq, PTE_V | PTE_R);
 	//	writef("fsipc:ending ipc send & recv dst:%x\n",dstva);
 	r =  ipc_recv(&whom, dstva, perm);
 	//writef("fsipc:r = %d\n",r);

@@ -74,7 +74,7 @@ void *memcpy(void *destaddr, void const *srcaddr, u_int len);
 int strcmp(const char *p, const char *q);
 
 // ipc.c
-void	ipc_send(u_int whom, u_int val, u_int srcva, u_int perm);
+void	ipc_send(u_int whom, u_int val, u_int transfer_id, u_int srcva, u_int perm);
 u_int	ipc_recv(u_int *whom, u_int dstva, u_int *perm);
 
 // wait.c
