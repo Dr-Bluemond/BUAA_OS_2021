@@ -443,3 +443,87 @@ int sys_ipc_can_send(int sysno, u_int envid, u_int value, u_int srcva,
 	return 0;
 }
 
+int sys_ipc_can_multi_send(int sysno, u_int value, u_int srcva, u_int perm, u_int envid_1, u_int envid_2, u_int envid_3, u_int envid_4, u_int envid_5) {
+	int r;
+	struct Env *e1, *e2, *e3, *e4, *e5;
+	struct Page *p;
+
+	perm = perm & (BY2PG - 1);
+
+	if (srcva >= UTOP) {
+		return -E_INVAL;
+	}
+
+	r = envid2env(envid_1, &e1, 0);
+	if (r < 0) {
+		return r;
+	}
+	r = envid2env(envid_2, &e2, 0);
+	if (r < 0) {
+		return r;
+	}
+	r = envid2env(envid_3, &e3, 0);
+	if (r < 0) {
+		return r;
+	}
+	r = envid2env(envid_4, &e4, 0);
+	if (r < 0) {
+		return r;
+	}
+	r = envid2env(envid_5, &e5, 0);
+	if (r < 0) {
+		return r;
+	}
+	int flag;
+	flag = 
+		e1->env_ipc_recving &&
+		e2->env_ipc_recving &&
+		e3->env_ipc_recving &&
+		e4->env_ipc_recving &&
+		e5->env_ipc_recving;
+
+	if (flag == 0) {
+		return -E_IPC_NOT_RECV;
+	}
+
+	e1->env_ipc_recving = 0;
+	e1->env_ipc_from = curenv->env_id;
+	e1->env_ipc_value = value;
+	e1->env_ipc_perm = perm;
+	e1->env_status = ENV_RUNNABLE;
+	e2->env_ipc_recving = 0;
+	e2->env_ipc_from = curenv->env_id;
+	e2->env_ipc_value = value;
+	e2->env_ipc_perm = perm;
+	e2->env_status = ENV_RUNNABLE;
+	e3->env_ipc_recving = 0;
+	e3->env_ipc_from = curenv->env_id;
+	e3->env_ipc_value = value;
+	e3->env_ipc_perm = perm;
+	e3->env_status = ENV_RUNNABLE;
+	e4->env_ipc_recving = 0;
+	e4->env_ipc_from = curenv->env_id;
+	e4->env_ipc_value = value;
+	e4->env_ipc_perm = perm;
+	e4->env_status = ENV_RUNNABLE;
+	e5->env_ipc_recving = 0;
+	e5->env_ipc_from = curenv->env_id;
+	e5->env_ipc_value = value;
+	e5->env_ipc_perm = perm;
+	e5->env_status = ENV_RUNNABLE;
+
+	if (srcva != 0) {
+		p = page_lookup(curenv->env_pgdir, srcva, NULL);
+		if (p == NULL) {
+			return -E_INVAL;
+		}
+		page_insert(e1->env_pgdir, p, e1->env_ipc_dstva, perm);
+		page_insert(e2->env_pgdir, p, e2->env_ipc_dstva, perm);
+		page_insert(e3->env_pgdir, p, e3->env_ipc_dstva, perm);
+		page_insert(e4->env_pgdir, p, e4->env_ipc_dstva, perm);
+		page_insert(e5->env_pgdir, p, e5->env_ipc_dstva, perm);
+	}
+
+	return 0;
+}
+ 

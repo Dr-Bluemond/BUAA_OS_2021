@@ -42,11 +42,19 @@ NESTED(handle_sys,TF_SIZE, sp)
 	lw      a3, 16(t0)
     lw      t3, 20(t0)                  // t3 <- the 4th argument of msyscall
     lw      t4, 24(t0)                  // t4 <- the 5th argument of msyscall
+    lw      t5, 28(t0)                  // t5 <- the 6th argument of msyscall
+    lw      t6, 32(t0)                  // t6 <- the 7th argument of msyscall
+    lw      t7, 36(t0)                  // t7 <- the 8th argument of msyscall
+    lw      t8, 40(t0)                  // t8 <- the 9th argument of msyscall
 
     // TODO: Allocate a space of six arguments on current kernel stack and copy the six arguments to proper location
-	addiu sp, sp, -24
+	addiu sp, sp, -40
 	sw t3, 16(sp)
 	sw t4, 20(sp)
+	sw t5, 24(sp)
+	sw t6, 28(sp)
+	sw t7, 32(sp)
+	sw t8, 36(sp)
     
     
     jalr    t2                          // Invoke sys_* function
@@ -54,7 +62,7 @@ NESTED(handle_sys,TF_SIZE, sp)
     
     // TODO: Resume current kernel stack
 
-	addiu sp, sp, 24
+	addiu sp, sp, 40
     
     sw      v0, TF_REG2(sp)             // Store return value of function sys_* (in $v0) into trapframe
 
@@ -79,3 +87,4 @@ sys_call_table:                         // Syscall Table
     .word sys_ipc_can_send
     .word sys_ipc_recv
     .word sys_cgetc
+	.word sys_ipc_can_multi_send

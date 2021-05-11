@@ -87,3 +87,9 @@ syscall_cgetc()
 {
 	return msyscall(SYS_cgetc, 0);
 }
+
+int
+syscall_ipc_can_multi_send(u_int value, u_int srcva, u_int perm, u_int envid_1, u_int envid_2, u_int envid_3, u_int envid_4, u_int envid_5) {
+	msyscall(SYS_ipc_can_multi_send, 8, value, srcva, perm, envid_1, envid_2,
+			envid_3, envid_4, envid_5);
+}
