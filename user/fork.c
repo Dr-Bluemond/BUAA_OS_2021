@@ -143,6 +143,7 @@ duppage(u_int envid, u_int pn)
 	u_int perm;
 	int flag = 0;
 
+
 	addr = pn << PGSHIFT;
 	perm = (*vpt)[pn] & (BY2PG - 1);
 	if ((perm & PTE_R) && !(perm & PTE_LIBRARY)) {

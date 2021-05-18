@@ -37,6 +37,7 @@ ipc_recv(u_int *whom, u_int dstva, u_int *perm)
 {
 	//printf("ipc_recv:come 0\n");
 	syscall_ipc_recv(dstva);
+	env = envs + ENVX(syscall_getenvid());
 
 	if (whom) {
 		*whom = env->env_ipc_from;
@@ -45,6 +46,7 @@ ipc_recv(u_int *whom, u_int dstva, u_int *perm)
 	if (perm) {
 		*perm = env->env_ipc_perm;
 	}
+//	writef("return value of ipc_recv is %x and %x\n", env->env_ipc_from, env->env_ipc_value);
 
 	return env->env_ipc_value;
 }

@@ -13,6 +13,7 @@ END(msyscall)
 
 
 LEAF(uget_sp_asm)
+
 	move v0, sp
 	jr ra
 	nop
