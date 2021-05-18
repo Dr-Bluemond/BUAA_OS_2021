@@ -216,7 +216,8 @@ env_alloc(struct Env **new, u_int parent_id)
 	e->env_id = mkenvid(e);
 	e->env_parent_id = parent_id;
 	e->env_status = ENV_RUNNABLE;
-	e->env_runs = 0;
+	e->env_pgcow = 0;
+	e->env_pgout = 0;
 
 
     /*Step 4: Focus on initializing the sp register and cp0_status of env_tf field, located at this new Env. */
@@ -462,6 +463,10 @@ env_destroy(struct Env *e)
         bcopy((void *)KERNEL_SP - sizeof(struct Trapframe),
               (void *)TIMESTACK - sizeof(struct Trapframe),
               sizeof(struct Trapframe));
+		printf("envid:%08x\n", curenv->env_id);
+		printf("pgcow:%08x\n", curenv->env_pgcow);
+		printf("pgout:%08x\n", curenv->env_pgout);
+
         printf("i am killed ... \n");
         sched_yield();
     }
@@ -497,7 +502,6 @@ env_run(struct Env *e)
 
     /*Step 2: Set 'curenv' to the new environment. */
 	curenv = e;
-	curenv->env_runs++;
 
 
     /*Step 3: Use lcontext() to switch to its address space. */
