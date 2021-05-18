@@ -153,6 +153,18 @@ duppage(u_int envid, u_int pn)
 	if (flag) syscall_mem_map(0, addr, 0, addr, perm);
 }
 
+static void
+tduppage(u_int envid, u_int pn)
+{
+	u_int addr;
+	u_int perm;
+
+	addr = pn << PGSHIFT;
+	perm = (*vpt)[pn] & (BY2PG - 1);
+	syscall_mem_map(0, addr, envid, addr, perm);
+	syscall_mem_map(0, addr, 0, addr, perm);
+}
+
 /* Overview:
  * 	User-level fork. Create a child and then copy our address space
  * and page fault handler setup to the child.
@@ -179,6 +191,9 @@ fork(void)
 
 	//alloc a new alloc
 	newenvid = syscall_env_alloc();
+	if (newenvid < 0) {
+		return newenvid;
+	}
 
 	if (newenvid == 0) {
 		env = envs + ENVX(syscall_getenvid());
@@ -188,6 +203,60 @@ fork(void)
 		for (i = 0; i < VPN(USTACKTOP); i++) {
 			if ((((Pde *)(*vpd))[i >> 10] & PTE_V) && (((Pte *)(*vpt))[i] & PTE_V)) {
 				duppage(newenvid, i);
+			}
+		}
+//		for (i = 0; i < PDX(USTACKTOP); i++) {
+//			if ((((Pde *)(*vpd))[i] & PTE_V) == 0) continue;
+//			for (j = 0; j < PTE2PT; j++) {
+//				if (((Pte *)(*vpt))[(i << 10) + j] & PTE_V) {
+//					duppage(newenvid, (i << 10) + j);
+//				}
+//			}
+//		}
+		syscall_mem_alloc(newenvid, UXSTACKTOP - BY2PG, PTE_V|PTE_R);
+		syscall_set_pgfault_handler(newenvid, __asm_pgfault_handler, UXSTACKTOP);
+		syscall_set_env_status(newenvid, ENV_RUNNABLE);
+	}
+
+	return newenvid;
+}
+
+u_int uget_sp() {
+	return ROUNDDOWN(uget_sp_asm(), BY2PG);
+}
+
+int
+tfork(void)
+{
+	// Your code here.
+	u_int newenvid;
+	extern struct Env *envs;
+	extern struct Env *env;
+	u_int i, j;
+
+	u_int sp = uget_sp();
+
+	//The parent installs pgfault using set_pgfault_handler
+	set_pgfault_handler(pgfault);
+
+	//alloc a new alloc
+	newenvid = syscall_env_alloc();
+	if (newenvid < 0) {
+		return newenvid;
+	}
+
+	if (newenvid == 0) {
+		env = envs + ENVX(syscall_getenvid());
+	}
+	
+	if (newenvid) {
+		for (i = 0; i < VPN(USTACKTOP); i++) {
+			if ((((Pde *)(*vpd))[i >> 10] & PTE_V) && (((Pte *)(*vpt))[i] & PTE_V)) {
+				if ((i << 10) >= sp) {
+					tduppage(newenvid, i);
+				} else {
+					duppage(newenvid, i);
+				}
 			}
 		}
 //		for (i = 0; i < PDX(USTACKTOP); i++) {
