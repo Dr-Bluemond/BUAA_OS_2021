@@ -454,6 +454,11 @@ void
 env_destroy(struct Env *e)
 {
     /* Hint: free e. */
+
+	printf("envid:%08x\n", e->env_id);
+	printf("pgcow:%08x\n", e->env_pgcow);
+	printf("pgout:%08x\n", e->env_pgout);
+
     env_free(e);
 
     /* Hint: schedule to run a new environment. */
@@ -463,9 +468,7 @@ env_destroy(struct Env *e)
         bcopy((void *)KERNEL_SP - sizeof(struct Trapframe),
               (void *)TIMESTACK - sizeof(struct Trapframe),
               sizeof(struct Trapframe));
-		printf("envid:%08x\n", curenv->env_id);
-		printf("pgcow:%08x\n", curenv->env_pgcow);
-		printf("pgout:%08x\n", curenv->env_pgout);
+
 
         printf("i am killed ... \n");
         sched_yield();
