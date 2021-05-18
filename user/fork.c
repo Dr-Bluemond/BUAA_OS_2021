@@ -93,13 +93,6 @@ pgfault(u_int va)
 		user_panic("this is not a COW page");
 	}
 
-	env->env_pgcow++;
-	u_int *pc = env->env_tf.pc;
-
-	writef("\nEnv:0x%x, code:0x%x, pgcow:%d, pgout:%d\n", 
-			env->env_id, *pc, env->env_pgcow, env->env_pgout);
-
-
 	perm = perm & (~PTE_COW);
     
     //map the new page at a temporary place
@@ -122,6 +115,14 @@ pgfault(u_int va)
 	if (r < 0) {
 		user_panic("failed to mem unmap");
 	}
+
+	struct Env *e;
+	e = envs + ENVX(syscall_getenvid());
+	e->env_pgcow++;
+	u_int *pc = e->env_tf.pc;
+
+	writef("\nEnv:0x%x, code:0x%x, pgcow:%d, pgout:%d\n", 
+			e->env_id, *pc, e->env_pgcow, e->env_pgout);
 
 	
 }
