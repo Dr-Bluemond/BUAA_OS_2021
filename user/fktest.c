@@ -1,30 +1,27 @@
-#include "lib.h"
-
-
+#include"lib.h"
+int global_a;
 void umain()
 {
-	int a = 0;
-	int id = 0;
-
-	if ((id = fork()) == 0) {
-		if ((id = fork()) == 0) {
-			a += 3;
-
-			for (;;) {
-				writef("\t\tthis is child2 :a:%d\n", a);
+	int a=0;
+	int id=0;
+	if((id=fork())==0){
+		if((id=tfork())==0){
+			global_a+=3;
+			for(;;){
+				writef("\t\tthisischild2:a:%d\n",global_a);
+				for(;;){}
 			}
 		}
-
-		a += 2;
-
-		for (;;) {
-			writef("\tthis is child :a:%d\n", a);
+		global_a+=2;
+		for(;;){
+			writef("\tthisischild:a:%d\n",global_a);
+			for(;;){
+			}
 		}
 	}
-
-	a++;
-
-	for (;;) {
-		writef("this is father: a:%d\n", a);
+	global_a++;
+	for(;;){
+		writef("thisisfather:a:%d\n",global_a);
+		for(;;){}
 	}
 }

@@ -161,6 +161,13 @@ tduppage(u_int envid, u_int pn)
 
 	addr = pn << PGSHIFT;
 	perm = (*vpt)[pn] & (BY2PG - 1);
+
+	if ((perm & PTE_COW)) {
+		pgfault(addr);
+	}
+
+	perm = (*vpt)[pn] & (BY2PG - 1);
+
 	syscall_mem_map(0, addr, envid, addr, perm);
 	syscall_mem_map(0, addr, 0, addr, perm);
 }
@@ -222,7 +229,8 @@ fork(void)
 }
 
 u_int uget_sp() {
-	return ROUNDDOWN(uget_sp_asm(), BY2PG);
+	u_int sp = uget_sp_asm();
+	return ROUNDDOWN(sp, BY2PG);
 }
 
 int
@@ -252,7 +260,7 @@ tfork(void)
 	if (newenvid) {
 		for (i = 0; i < VPN(USTACKTOP); i++) {
 			if ((((Pde *)(*vpd))[i >> 10] & PTE_V) && (((Pte *)(*vpt))[i] & PTE_V)) {
-				if ((i << 10) >= sp) {
+				if ((i << 12) >= sp) {
 					duppage(newenvid, i);
 				} else {
 					tduppage(newenvid, i);
