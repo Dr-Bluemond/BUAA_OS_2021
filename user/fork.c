@@ -166,7 +166,7 @@ tduppage(u_int envid, u_int pn)
 		pgfault(addr);
 	}
 
-	perm = (*vpt)[pn] & (BY2PG - 1);
+	perm = perm & (~PTE_COW);
 
 	syscall_mem_map(0, addr, envid, addr, perm);
 	syscall_mem_map(0, addr, 0, addr, perm);
