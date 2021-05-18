@@ -253,9 +253,9 @@ tfork(void)
 		for (i = 0; i < VPN(USTACKTOP); i++) {
 			if ((((Pde *)(*vpd))[i >> 10] & PTE_V) && (((Pte *)(*vpt))[i] & PTE_V)) {
 				if ((i << 10) >= sp) {
-					tduppage(newenvid, i);
-				} else {
 					duppage(newenvid, i);
+				} else {
+					tduppage(newenvid, i);
 				}
 			}
 		}
