@@ -119,7 +119,7 @@ pgfault(u_int va)
 	struct Env *e;
 	e = envs + ENVX(syscall_getenvid());
 	e->env_pgcow++;
-	u_int *pc = e->env_tf.pc;
+	u_int *pc = e->env_tf.cp0_epc;
 
 	writef("\nEnv:0x%x, code:0x%x, pgcow:%d, pgout:%d\n", 
 			e->env_id, *pc, e->env_pgcow, e->env_pgout);
