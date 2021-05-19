@@ -1,0 +1,215 @@
+Autotest: Begin at Wed May 19 10:02:12 CST 2021
+[47;33m >>>>>>>>> Beginning test part1 >>>>>>>>> [0m
+
+
+Begin build at Wed May 19 10:02:13 CST 2021
+Cleanning the project.................
+
+for d in boot drivers init lib mm user fs;	\
+		do					\
+			make --directory=$d clean; \
+		done; \
+	rm -rf *.o *~ gxemul/vmlinux
+make[1]: Entering directory `/usr/src/workdir/boot'
+rm -rf *~ *.o
+make[1]: Leaving directory `/usr/src/workdir/boot'
+make[1]: Entering directory `/usr/src/workdir/drivers'
+for d in gxconsole; \
+		do				\
+			make --directory=$d clean; \
+		done
+make[2]: Entering directory `/usr/src/workdir/drivers/gxconsole'
+rm -rf *.o *~
+make[2]: Leaving directory `/usr/src/workdir/drivers/gxconsole'
+make[1]: Leaving directory `/usr/src/workdir/drivers'
+make[1]: Entering directory `/usr/src/workdir/init'
+rm -rf *~ *.o
+make[1]: Leaving directory `/usr/src/workdir/init'
+make[1]: Entering directory `/usr/src/workdir/lib'
+rm -rf *~ *.o
+make[1]: Leaving directory `/usr/src/workdir/lib'
+make[1]: Entering directory `/usr/src/workdir/mm'
+rm -rf *~ *.o
+make[1]: Leaving directory `/usr/src/workdir/mm'
+make[1]: Entering directory `/usr/src/workdir/user'
+rm -rf *~ *.o *.b.c *.x *.b
+make[1]: Leaving directory `/usr/src/workdir/user'
+make[1]: Entering directory `/usr/src/workdir/fs'
+rm -rf *~ *.o *.b.c *.b *.x
+make[1]: Leaving directory `/usr/src/workdir/fs'
+
+Building the project..................
+
+make --directory=boot
+make[1]: Entering directory `/usr/src/workdir/boot'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include/ -c start.S 
+make[1]: Leaving directory `/usr/src/workdir/boot'
+make --directory=drivers
+make[1]: Entering directory `/usr/src/workdir/drivers'
+make --directory=gxconsole
+make[2]: Entering directory `/usr/src/workdir/drivers/gxconsole'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000   -c -o console.o console.c
+make[2]: Leaving directory `/usr/src/workdir/drivers/gxconsole'
+make[1]: Leaving directory `/usr/src/workdir/drivers'
+make --directory=init
+make[1]: Entering directory `/usr/src/workdir/init'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include -c init.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include -c main.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include -c code.c
+make[1]: Leaving directory `/usr/src/workdir/init'
+make --directory=lib
+make[1]: Entering directory `/usr/src/workdir/lib'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I./ -I../ -I../include/ -c env.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I./ -I../ -I../include/ -c print.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I./ -I../ -I../include/ -c printf.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I./ -I../ -I../include/ -c sched.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I./ -I../ -I../include/ -c env_asm.S
+env_asm.S: Assembler messages:
+env_asm.S:62: Warning: Used $at without ".set noat"
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I./ -I../ -I../include/ -c kclock.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I./ -I../ -I../include/ -c traps.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I./ -I../ -I../include/ -c genex.S
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I./ -I../ -I../include/ -c kclock_asm.S
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I./ -I../ -I../include/ -c syscall.S
+syscall.S: Assembler messages:
+syscall.S:9: Warning: Used $at without ".set noat"
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I./ -I../ -I../include/ -c syscall_all.c
+syscall_all.c: In function 'sys_write_dev':
+syscall_all.c:474: warning: control reaches end of non-void function
+syscall_all.c: In function 'sys_read_dev':
+syscall_all.c:495: warning: control reaches end of non-void function
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I./ -I../ -I../include/ -c getc.S
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I./ -I../ -I../include/ -c kernel_elfloader.c
+make[1]: Leaving directory `/usr/src/workdir/lib'
+make --directory=mm
+make[1]: Entering directory `/usr/src/workdir/mm'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I./ -I../ -I../include/ -c pmap.c
+pmap.c: In function 'boot_map_segment':
+pmap.c:160: warning: unused variable 'va_temp'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I./ -I../ -I../include/ -c tlb_asm.S
+make[1]: Leaving directory `/usr/src/workdir/mm'
+make --directory=user
+make[1]: Entering directory `/usr/src/workdir/user'
+echo as entry.S
+as entry.S
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include/ -c -o entry.o entry.S
+entry.S: Assembler messages:
+entry.S:104: Warning: Used $at without ".set noat"
+echo as syscall_wrap.S
+as syscall_wrap.S
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include/ -c -o syscall_wrap.o syscall_wrap.S
+echo user1 cc devtst.c
+user1 cc devtst.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include/ -c -o devtst.o devtst.c
+devtst.c: In function 'umain':
+devtst.c:11: warning: implicit declaration of function 'syscall_read_dev'
+devtst.c:22: warning: implicit declaration of function 'syscall_write_dev'
+echo user1 cc printf.c
+user1 cc printf.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include/ -c -o printf.o printf.c
+echo user1 cc print.c
+user1 cc print.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include/ -c -o print.o print.c
+echo user1 cc libos.c
+user1 cc libos.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include/ -c -o libos.o libos.c
+echo user1 cc fork.c
+user1 cc fork.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include/ -c -o fork.o fork.c
+fork.c: In function 'pgfault':
+fork.c:105: warning: passing argument 1 of 'user_bcopy' makes pointer from integer without a cast
+fork.c:108: warning: passing argument 2 of 'syscall_mem_map' makes integer from pointer without a cast
+fork.c:114: warning: passing argument 2 of 'syscall_mem_unmap' makes integer from pointer without a cast
+fork.c: In function 'fork':
+fork.c:174: warning: unused variable 'j'
+echo user1 cc pgfault.c
+user1 cc pgfault.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include/ -c -o pgfault.o pgfault.c
+echo user1 cc syscall_lib.c
+user1 cc syscall_lib.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include/ -c -o syscall_lib.o syscall_lib.c
+echo user1 cc ipc.c
+user1 cc ipc.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include/ -c -o ipc.o ipc.c
+echo user1 cc string.c
+user1 cc string.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include/ -c -o string.o string.c
+echo user1 cc fd.c
+user1 cc fd.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include/ -c -o fd.o fd.c
+fd.c: In function 'read':
+fd.c:190: warning: unused variable 'fd'
+fd.c:189: warning: unused variable 'dev'
+fd.c:201: warning: 'r' is used uninitialized in this function
+echo user1 cc pageref.c
+user1 cc pageref.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include/ -c -o pageref.o pageref.c
+echo user1 cc file.c
+user1 cc file.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include/ -c -o file.o file.c
+file.c: In function 'open':
+file.c:38: warning: unused variable 'i'
+file.c:37: warning: unused variable 'va'
+file.c:36: warning: unused variable 'r'
+file.c:35: warning: unused variable 'fileid'
+file.c:35: warning: unused variable 'size'
+file.c:34: warning: unused variable 'ffd'
+file.c:33: warning: unused variable 'fd'
+file.c:58: warning: control reaches end of non-void function
+file.c: In function 'remove':
+file.c:260: warning: control reaches end of non-void function
+echo user1 cc pipe.c
+user1 cc pipe.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include/ -c -o pipe.o pipe.c
+pipe.c: In function '_pipeisclosed':
+pipe.c:94: warning: unused variable 'runs'
+pipe.c:94: warning: unused variable 'pfp'
+pipe.c:94: warning: unused variable 'pfd'
+pipe.c:99: warning: control reaches end of non-void function
+pipe.c: In function 'piperead':
+pipe.c:134: warning: unused variable 'rbuf'
+pipe.c:133: warning: unused variable 'p'
+pipe.c:141: warning: 'i' is used uninitialized in this function
+pipe.c: In function 'pipewrite':
+pipe.c:160: warning: unused variable 'wbuf'
+pipe.c:159: warning: unused variable 'p'
+pipe.c:158: warning: unused variable 'i'
+echo user1 cc fsipc.c
+user1 cc fsipc.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include/ -c -o fsipc.o fsipc.c
+fsipc.c: In function 'fsipc_remove':
+fsipc.c:137: warning: control reaches end of non-void function
+echo user1 cc console.c
+user1 cc console.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include/ -c -o console.o console.c
+echo user1 cc fprintf.c
+user1 cc fprintf.c
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include/ -c -o fprintf.o fprintf.c
+echo ld devtst.b
+ld devtst.b
+/OSLAB/compiler/usr/bin/mips_4KC-ld -o devtst.b  -G 0 -static -n -nostdlib -T ./user.lds entry.o syscall_wrap.o devtst.o printf.o print.o libos.o fork.o pgfault.o syscall_lib.o ipc.o string.o fd.o pageref.o file.o pipe.o fsipc.o console.o fprintf.o
+devtst.o: In function `umain':
+devtst.c:(.text+0x74): undefined reference to `syscall_read_dev'
+devtst.c:(.text+0xcc): undefined reference to `syscall_write_dev'
+devtst.c:(.text+0xec): undefined reference to `syscall_read_dev'
+devtst.c:(.text+0x120): undefined reference to `syscall_read_dev'
+devtst.c:(.text+0x154): undefined reference to `syscall_read_dev'
+devtst.c:(.text+0x188): undefined reference to `syscall_read_dev'
+devtst.c:(.text+0x1bc): undefined reference to `syscall_read_dev'
+devtst.o:devtst.c:(.text+0x1f0): more undefined references to `syscall_read_dev' follow
+devtst.o: In function `umain':
+devtst.c:(.text+0x2c0): undefined reference to `syscall_write_dev'
+devtst.c:(.text+0x2f4): undefined reference to `syscall_write_dev'
+devtst.c:(.text+0x328): undefined reference to `syscall_write_dev'
+devtst.c:(.text+0x35c): undefined reference to `syscall_write_dev'
+devtst.c:(.text+0x390): undefined reference to `syscall_write_dev'
+devtst.o:devtst.c:(.text+0x3c4): more undefined references to `syscall_write_dev' follow
+make[1]: *** [devtst.b] Error 1
+rm devtst.o
+make[1]: Leaving directory `/usr/src/workdir/user'
+make: *** [user] Error 2
+Compile Error!
+
+End build at Wed May 19 10:02:16 CST 2021
+[31m[01m[ There is something wrong with your vmlinux. ][0m
+[33m[01m[ You got 0 (of 100) this time. Wed May 19 10:02:16 CST 2021 ][0m
