@@ -27,7 +27,7 @@ objects		  := $(boot_dir)/start.o			  \
 				 $(fs_dir)/*.x \
 				 $(mm_dir)/*.o
 
-.PHONY: all $(modules) clean
+.PHONY: all $(modules) clean run debug submit
 
 all: $(modules) vmlinux
 
@@ -43,5 +43,18 @@ clean:
 			$(MAKE) --directory=$$d clean; \
 		done; \
 	rm -rf *.o *~ $(vmlinux_elf)
+
+run: all
+	/OSLAB/gxemul -E testmips -C R3000 -M 64 gxemul/vmlinux
+
+debug: all
+	/OSLAB/gxemul -E testmips -C R3000 -M 64 -V gxemul/vmlinux
+
+submit: clean
+	git add --all
+	git commit -m'submit'
+	git push origin lab5
+	
+
 
 include include.mk
