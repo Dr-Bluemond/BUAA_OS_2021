@@ -30,8 +30,12 @@ ide_read(u_int diskno, u_int secno, void *dst, u_int nsecs)
 	int offset = 0;
 
 	while (offset_begin + offset < offset_end) {
-            // Your code here
-            // error occurred, then panic.
+		// Your code here
+		// error occurred, then panic.
+		if (syscall_read_dev(dst + offset, 0x13000000 + offset, 0x200) < 0) {
+			user_panic("failed to read ide");
+		}
+		offset += 0x200;
 	}
 }
 
@@ -52,18 +56,22 @@ ide_read(u_int diskno, u_int secno, void *dst, u_int nsecs)
 void
 ide_write(u_int diskno, u_int secno, void *src, u_int nsecs)
 {
-        // Your code here
-	// int offset_begin = ;
-	// int offset_end = ;
-	// int offset = ;
+	// Your code here
+	int offset_begin = secno * 0x200;
+	int offset_end = offset_begin + nsecs * 0x200;
+	int offset = 0;
 
 	// DO NOT DELETE WRITEF !!!
 	writef("diskno: %d\n", diskno);
 
-	// while ( < ) {
+	while (offset_begin + offset < offset_end) {
+		// Your code here
 	    // copy data from source array to disk buffer.
-
-            // if error occur, then panic.
-	// }
+		// error occurred, then panic.
+		if (syscall_write_dev(src + offset, 0x13000000 + offset, 0x200) < 0) {
+			user_panic("failed to write ide");
+		}
+		offset += 0x200;
+	}
 }
 
