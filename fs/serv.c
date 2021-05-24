@@ -207,9 +207,12 @@ serve_remove(u_int envid, struct Fsreq_remove *rq)
 
 	// Step 1: Copy in the path, making sure it's terminated.
 	// Notice: add \0 to the tail of the path
+	strcpy(path, rq->req_path);
 
 	// Step 2: Remove file from file system and response to user-level process.
 	// Call file_remove and ipc_send an approprite value to corresponding env.
+	r = file_remove(path);
+	ipc_send(envid, r, 0, 0);
 }
 
 void

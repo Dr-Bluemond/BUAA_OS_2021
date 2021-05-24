@@ -55,7 +55,7 @@ open(const char *path, int mode)
 
 	// Step 3: Set the start address storing the file's content. Set size and fileid correctly.
 	// Hint: Use fd2data to get the start address.
-	ffd = (Filefd *)fd;
+	ffd = (struct Filefd *)fd;
 	va = fd2data(fd);
 	fileid = ffd->f_fileid;
 	size = ffd->f_file.f_size;
@@ -274,7 +274,8 @@ remove(const char *path)
 {
 	// Your code here.
 	// Call fsipc_remove.
-	
+	fsipc_remove(path);
+
 }
 
 // Overview:
