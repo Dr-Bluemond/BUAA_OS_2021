@@ -215,9 +215,6 @@ struct File *create_file(struct File *dirf) {
 		if (i < NDIRECT) {
 			bno = dirf->f_direct[i];
 		} else {
-			if(dirf->f_indirect == 0) {
-				dirf->f_indirect = next_block(BLOCK_INDEX);
-			}
 			bno = ((uint32_t *)(disk[dirf->f_indirect].data))[i];
 		}
 		dirblk = (struct File *)(disk[bno].data);
