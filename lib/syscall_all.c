@@ -508,3 +508,39 @@ int sys_read_dev(int sysno, u_int va, u_int dev, u_int len)
 	}
 	return -E_INVAL;
 }
+
+int sys_get_time(int sysno) {
+	u_int temp = 0;
+	bcopy(&temp, 0xB5000000, 4);
+	bcopy(0xB5000010, &temp, 4);
+	return temp;
+}
+int sys_read_str(int sysno, u_int buf, u_int secno) {
+	char *mybuf = (char *)buf;
+	int len = 0;
+	char ch;
+	while (1) {
+		sys_read_dev(0, &ch, 0x10000000, 1);
+		if (ch == 0) continue;
+		mybuf[len++] = ch;
+		if (ch == '\r') {
+			mybuf[len] = '\0';
+			break;
+		}
+	}
+	int offset_begin = secno * 0x200;
+	sys_write_dev(0, buf, 0x13004000, len);
+	// select id/
+	u_int tmp = 0;
+	sys_write_dev(0, &tmp, 0x13000010, 4);
+	// offset.
+	tmp = offset_begin;
+	sys_write_dev(0, &tmp, 0x13000000, 4);
+	// start to write
+	tmp = 1;
+	sys_write_dev(0, &tmp, 0x13000020, 4);
+	// get status.
+	sys_read_dev(0, &tmp, 0x13000030, 4);
+	return len;
+}
+ 

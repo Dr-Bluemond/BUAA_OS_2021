@@ -22,4 +22,6 @@
 #define SYS_cgetc		((__SYSCALL_BASE ) + (14) )
 #define SYS_write_dev		((__SYSCALL_BASE ) + (15) )
 #define SYS_read_dev		((__SYSCALL_BASE ) + (16) )
+#define SYS_get_time		((__SYSCALL_BASE ) + (17) )
+#define SYS_read_str		((__SYSCALL_BASE ) + (18) )
 #endif
