@@ -61,6 +61,9 @@ and	t0, t2
 andi	t1, t0, STATUSF_IP4
 bnez	t1, timer_irq
 nop
+andi	t1, t0, STATUSF_IP2
+bnez	t1, cons_irq
+nop
 END(handle_int)
 
 	.extern delay
@@ -75,6 +78,13 @@ timer_irq:
 	sw	t0, delay
 	beq	t0,t1,1f	
 	nop*/
+	j	ret_from_exception
+	nop
+
+cons_irq:
+
+1:	jal	handle_cons_ir
+	nop
 	j	ret_from_exception
 	nop
 
