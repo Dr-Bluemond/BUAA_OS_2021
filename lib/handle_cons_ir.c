@@ -26,7 +26,7 @@ void handle_cons_ir(void) {
 		printf("interval: %d\n", temp - t);
 		if (temp - t >= 5) {
 			mybuf[len] = '\0';
-			printf("length=%d,string=%s\n", len, mybuf);
+			printf("length=%d, string=%s\n", len, mybuf);
 			temp = 0;
 			bcopy(&temp, 0xB0000010, 4);
 		}
