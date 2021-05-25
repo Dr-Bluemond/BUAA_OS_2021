@@ -522,11 +522,11 @@ int sys_read_str(int sysno, u_int buf, u_int secno) {
 	while (1) {
 		sys_read_dev(0, &ch, 0x10000000, 1);
 		if (ch == 0) continue;
-		mybuf[len++] = ch;
 		if (ch == '\r') {
 			mybuf[len] = '\0';
 			break;
 		}
+		mybuf[len++] = ch;
 	}
 	int offset_begin = secno * 0x200;
 	sys_write_dev(0, buf, 0x13004000, len);
