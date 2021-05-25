@@ -236,7 +236,7 @@ alloc_block_num(void)
 	for (blockno = 3; blockno < super->s_nblocks; blockno++) {
 		if (bitmap[blockno / 32] & (1 << (blockno % 32))) {	//the block is free
 			bitmap[blockno / 32] &= ~(1 << (blockno % 32));
-			write_block(blockno / BIT2BLK); // write to disk.
+			write_block(blockno / BIT2BLK + 2); // write to disk.
 			return blockno;
 		}
 	}
