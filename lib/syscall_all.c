@@ -474,7 +474,7 @@ int sys_write_dev(int sysno, u_int va, u_int dev, u_int len)
 	if ((0x10000000 <= dev && dev + len <= 0x10000000 + 0x20)
 	    || (0x13000000 <= dev && dev + len <= 0x13000000 + 0x4200)
 	    || (0x15000000 <= dev && dev + len <= 0x15000000 + 0x200)) {
-		bcopy(va, dev + 0xA0000000, len);
+		bcopy((char *)va, (char *)(dev + 0xA0000000), len);
 		return 0;
 	}
 	return -E_INVAL;
@@ -503,7 +503,7 @@ int sys_read_dev(int sysno, u_int va, u_int dev, u_int len)
 	if ((0x10000000 <= dev && dev + len <= 0x10000000 + 0x20)
 	    || (0x13000000 <= dev && dev + len <= 0x13000000 + 0x4200)
 	    || (0x15000000 <= dev && dev + len <= 0x15000000 + 0x200)) {
-		bcopy(dev + 0xA0000000, va, len);
+		bcopy((char *)(dev + 0xA0000000), (char *)va, len);
 		return 0;
 	}
 	return -E_INVAL;

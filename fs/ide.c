@@ -36,17 +36,17 @@ ide_read(u_int diskno, u_int secno, void *dst, u_int nsecs)
 		// error occurred, then panic.
 		tmp = diskno;
 		// select the IDE id.
-		if (syscall_write_dev(&tmp, 0x13000010, 4)) user_panic("error in ide_read()\n");
+		if (syscall_write_dev((int)&tmp, 0x13000010, 4)) user_panic("error in ide_read()\n");
 		// offset
 		tmp = offset_begin + offset;
-		if (syscall_write_dev(&tmp, 0x13000000, 4)) user_panic("error in ide_read()\n");
+		if (syscall_write_dev((int)&tmp, 0x13000000, 4)) user_panic("error in ide_read()\n");
 		// start read.
 		tmp = 0;
-		if (syscall_write_dev(&tmp, 0x13000020, 4)) user_panic("error in ide_read()\n");
+		if (syscall_write_dev((int)&tmp, 0x13000020, 4)) user_panic("error in ide_read()\n");
 		// get result.
-		if (syscall_read_dev(&tmp, 0x13000030, 4)) user_panic("error in ide_read()\n");
+		if (syscall_read_dev((int)&tmp, 0x13000030, 4)) user_panic("error in ide_read()\n");
 		if (tmp == 0) user_panic("error in ide_read()");
-		if (syscall_read_dev(dst + offset, 0x13004000, 512)) user_panic("error in ide_read()\n");
+		if (syscall_read_dev((int)(dst + offset), 0x13004000, 512)) user_panic("error in ide_read()\n");
 		offset += 0x200;
 	}
 }
@@ -82,18 +82,18 @@ ide_write(u_int diskno, u_int secno, void *src, u_int nsecs)
 		// Your code here
 	    // copy data from source array to disk buffer.
 		// error occurred, then panic.
-		if (syscall_write_dev(src + offset, 0x13004000, 512)) user_panic("error in ide_write()");
+		if (syscall_write_dev((int)(src + offset), 0x13004000, 512)) user_panic("error in ide_write()");
 		// select id/
 		tmp = diskno;
-		if (syscall_write_dev(&tmp, 0x13000010, 4)) user_panic("error in ide_write()");
+		if (syscall_write_dev((int)&tmp, 0x13000010, 4)) user_panic("error in ide_write()");
 		// offset.
 		tmp = offset_begin + offset;
-		if (syscall_write_dev(&tmp, 0x13000000, 4)) user_panic("error in ide_write()");
+		if (syscall_write_dev((int)&tmp, 0x13000000, 4)) user_panic("error in ide_write()");
 		// start to write
 		tmp = 1;
-		if (syscall_write_dev(&tmp, 0x13000020, 4)) user_panic("error in ide_write()");
+		if (syscall_write_dev((int)&tmp, 0x13000020, 4)) user_panic("error in ide_write()");
 		// get status.
-		if (syscall_read_dev(&tmp, 0x13000030, 4)) user_panic("error in ide_write()");
+		if (syscall_read_dev((int)&tmp, 0x13000030, 4)) user_panic("error in ide_write()");
 		if (tmp == 0) user_panic("error in ide_write()");
 		offset += 0x200;
 	}

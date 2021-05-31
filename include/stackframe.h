@@ -21,6 +21,7 @@ mtc0	t0, CP0_STATUS
 .endm
 
 .macro SAVE_ALL
+.set noat
 
 mfc0	k0, CP0_STATUS
 sll		k0, 3     /* extract cu0 bit */
@@ -82,6 +83,7 @@ sw	$27, TF_REG27(sp)
 sw	$28, TF_REG28(sp)
 sw	$30, TF_REG30(sp)
 sw	$31, TF_REG31(sp)
+.set at
 .endm
 /*
  * Note that we restore the IE flags from stack. This means

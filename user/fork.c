@@ -102,16 +102,16 @@ pgfault(u_int va)
 	}
 
 	//copy the content
-	user_bcopy(ROUNDDOWN(va, BY2PG), tmp, BY2PG);
+	user_bcopy((void *)ROUNDDOWN(va, BY2PG), tmp, BY2PG);
 	
     //map the page on the appropriate place
-	r = syscall_mem_map(0, tmp, 0, va, perm);
+	r = syscall_mem_map(0, (int)tmp, 0, va, perm);
 	if (r < 0) {
 		user_panic("failed to mem map");
 	}
 	
     //unmap the temporary place
-	r = syscall_mem_unmap(0, tmp);
+	r = syscall_mem_unmap(0, (int)tmp);
 	if (r < 0) {
 		user_panic("failed to mem unmap");
 	}
@@ -171,7 +171,7 @@ fork(void)
 	u_int newenvid;
 	extern struct Env *envs;
 	extern struct Env *env;
-	u_int i, j;
+	u_int i;
 
 
 	//The parent installs pgfault using set_pgfault_handler

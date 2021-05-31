@@ -11,7 +11,7 @@ KERNEL_SP:
 
 .text
 .set noreorder
-//	.set noat
+.set noat
 LEAF(env_pop_tf)
     .set	mips1          
     //1:	j	1b
@@ -75,6 +75,7 @@ lw	k0,TF_STATUS(k0)
 
 
 END(env_pop_tf)
+.set at
 
 LEAF(lcontext)
     .extern	mCONTEXT

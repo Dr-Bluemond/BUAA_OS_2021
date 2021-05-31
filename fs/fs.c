@@ -8,6 +8,9 @@ u_int *bitmap;		// bitmap blocks mapped in memory
 
 void file_flush(struct File *);
 int block_is_free(u_int);
+void write_block(u_int blockno);
+int read_block(u_int blockno, void **blk, u_int *isnew);
+
 
 // Overview:
 //	Return the virtual address of this disk block. If the `blockno` is greater
@@ -560,7 +563,7 @@ dir_lookup(struct File *dir, char *name, struct File **file)
 		// If we find the target file, set the result to *file and set f_dir field.
 		for (j = 0; j < FILE2BLK; j++) {
 			f = ((struct File *)blk) + j;
-			if (strcmp(f->f_name, name) == 0) {
+			if (strcmp((char *)f->f_name, name) == 0) {
 				f->f_dir = dir;
 				*file = f;
 				return 0;
