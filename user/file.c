@@ -12,12 +12,12 @@ static int file_stat(struct Fd *fd, struct Stat *stat);
 // Dot represents choosing the variable of the same name within struct declaration 
 // to assign, and no need to consider order of variables.
 struct Dev devfile = {
-	.dev_id =	'f',
-	.dev_name =	"file",
-	.dev_read =	file_read,
+	.dev_id =		'f',
+	.dev_name =		"file",
+	.dev_read =		file_read,
 	.dev_write =	file_write,
 	.dev_close =	file_close,
-	.dev_stat =	file_stat,
+	.dev_stat =		file_stat,
 };
 
 
@@ -40,7 +40,7 @@ open(const char *path, int mode)
 	// Step 1: Alloc a new Fd, return error code when fail to alloc.
 	// Hint: Please use fd_alloc.
 
-	r = fd_alloc(&fd);
+	r = fd_alloc(&fd); // this is a whole 4KB space
 	if (r < 0) {
 		return r;
 	}

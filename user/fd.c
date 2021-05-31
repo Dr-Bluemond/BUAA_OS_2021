@@ -40,7 +40,7 @@ fd_alloc(struct Fd **fd)
 	u_int fdno;
 
 	for (fdno = 0; fdno < MAXFD - 1; fdno++) {
-		va = INDEX2FD(fdno);
+		va = INDEX2FD(fdno); // wow you got a whole PAGE(4KB)
 
 		if (((* vpd)[va / PDMAP] & PTE_V) == 0) {
 			*fd = (struct Fd *)va;

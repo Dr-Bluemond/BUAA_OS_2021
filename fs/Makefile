@@ -29,26 +29,26 @@ CFLAGS += -nostdlib -static
 all: serv.x fs.img serv.b
 
 %.x: %.b.c
-	echo cc1 $<
+# echo cc1 $<
 	$(CC) $(INCLUDES) $(CFLAGS) -c -o $@ $<
 
 %.b.c: %.b
-	echo create $@
-	echo bintoc $* $< > $@~
+# echo create $@
+# echo bintoc $* $< > $@~
 	chmod +x $(tools_dir)/bintoc
 	$(tools_dir)/bintoc $* $< > $@~ && mv -f $@~ $@
 #	grep \. $@
 	
 %.b: ../user/entry.o ../user/syscall_wrap.o %.o $(USERLIB) $(FSLIB)
-	echo ld $@
+# echo ld $@
 	$(LD) -o $@ $(LDFLAGS) -G 0 -static -n -nostdlib -T $(user_dir)/user.lds $^
 
 %.o: %.c
-	echo user1 cc $<
+# echo user1 cc $<
 	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
 
 %.o: %.S
-	echo as $<
+# echo as $<
 	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
 
 

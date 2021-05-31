@@ -27,26 +27,26 @@ CFLAGS += -nostdlib -static
 all: fktest.x fktest.b pingpong.x pingpong.b idle.x fstest.x fstest.b $(USERLIB) entry.o syscall_wrap.o
 
 %.x: %.b.c
-	echo cc1 $<
+# echo cc1 $<
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 %.b.c: %.b
-	echo create $@
-	echo bintoc $* $< > $@~
+# echo create $@
+# echo bintoc $* $< > $@~
 	chmod +x ./bintoc
 	./bintoc $* $< > $@~ && mv -f $@~ $@
 #	grep \. $@
 	
 %.b: entry.o syscall_wrap.o %.o $(USERLIB)
-	echo ld $@
+# echo ld $@
 	$(LD) -o $@ $(LDFLAGS) -G 0 -static -n -nostdlib -T ./user.lds $^
 
 %.o: %.c
-	echo user1 cc $<
+# echo user1 cc $<
 	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
 
 %.o: %.S
-	echo as $<
+# echo as $<
 	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
 
 %.o: lib.h
