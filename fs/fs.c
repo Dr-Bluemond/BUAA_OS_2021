@@ -541,7 +541,7 @@ file_dirty(struct File *f, u_int offset)
 //	return 0 on success, and set the pointer to the target file in `*file`.
 //		< 0 on error.
 int
-dir_lookup(struct File *dir, char *name, struct File **file)
+dir_lookup(struct File *dir, char *name, struct File **file, int isdir)
 {
 	int r;
 	u_int i, j, nblock;
@@ -564,6 +564,9 @@ dir_lookup(struct File *dir, char *name, struct File **file)
 		for (j = 0; j < FILE2BLK; j++) {
 			f = ((struct File *)blk) + j;
 			if (strcmp((char *)f->f_name, name) == 0) {
+				if ((f->f_type == FTYPE_DIR) != isdir) {
+					continue;
+				}
 				f->f_dir = dir;
 				*file = f;
 				return 0;
@@ -636,14 +639,16 @@ skip_slash(char *p)
 //	If we cannot find the file but find the directory it should be in, set 
 //	*pdir and copy the final path element into lastelem.
 int
-walk_path(char *path, struct File **pdir, struct File **pfile, char *lastelem)
+walk_path(char *path, struct File **pdir, struct File **pfile, char *lastelem, char* fpath)
 {
 	char *p;
+	char *start;
 	char name[MAXNAMELEN];
 	struct File *dir, *file;
 	int r;
 
 	// start at the root.
+	start = path;
 	path = skip_slash(path);
 	file = &super->s_root;
 	dir = 0;
@@ -670,26 +675,41 @@ walk_path(char *path, struct File **pdir, struct File **pfile, char *lastelem)
 
 		user_bcopy(p, name, path - p);
 		name[path - p] = '\0';
+		if (fpath) {
+			user_bcopy(start, fpath, path - start);
+			fpath[path - start] = 0;
+		}
 		path = skip_slash(path);
 
 		if (dir->f_type != FTYPE_DIR) {
 			return -E_NOT_FOUND;
 		}
 
-		if ((r = dir_lookup(dir, name, &file)) < 0) {
-			if (r == -E_NOT_FOUND && *path == '\0') {
-				if (pdir) {
-					*pdir = dir;
+		if (*path != '\0') {
+			if ((r = dir_lookup(dir, name, &file, 1)) < 0) {
+				if (r == -E_NOT_FOUND) {
+					if (pdir) {
+						*pdir = NULL;
+					}
+					*pfile = 0;
 				}
-
-				if (lastelem) {
-					strcpy(lastelem, name);
-				}
-
-				*pfile = 0;
+				return r;
 			}
+		} else {
+			// *path == '\0'
+			if ((r = dir_lookup(dir, name, &file, 0)) < 0) {
+				if (r == -E_NOT_FOUND) {
+					if (pdir) {
+						*pdir = dir;
+					}
+					if (lastelem) {
+						strcpy(lastelem, name);
+					}
 
-			return r;
+					*pfile = 0;
+				}
+				return r;
+			}
 		}
 	}
 
@@ -710,7 +730,7 @@ walk_path(char *path, struct File **pdir, struct File **pfile, char *lastelem)
 int
 file_open(char *path, struct File **file)
 {
-	return walk_path(path, 0, file, 0);
+	return walk_path(path, 0, file, 0, 0);
 }
 
 // Overview:
@@ -720,20 +740,37 @@ file_open(char *path, struct File **file)
 //	On success set *file to point at the file and return 0.
 // 	On error return < 0.
 int
-file_create(char *path, struct File **file)
+file_create(char *path, struct File **file, int recursive)
 {
 	char name[MAXNAMELEN];
+	char fpath[MAXNAMELEN];
 	int r;
 	struct File *dir, *f;
 
-	if ((r = walk_path(path, &dir, &f, name)) == 0) {
-		return -E_FILE_EXISTS;
-	}
+	if (recursive) {
+		while (1) {
+			r = walk_path(path, &dir, &f, name, fpath);
+			if (r == 0) {
+				return -E_FILE_EXISTS;
+			}
+			if (dir == 0) { // indicates path not found
+				r = file_create(fpath, &f, 0);
+			writef("create result is %d\n", r);
+				f->f_type = 1;
+				continue;
+			}
+			break;
+		}
+	} else {
+		if ((r = walk_path(path, &dir, &f, name, 0)) == 0) {
+			return -E_FILE_EXISTS;
+		}
 
-	if (dir == 0) {
-		return -E_DIR_NOT_EXIST;
-	}
+		if (dir == 0) {
+			return -E_DIR_NOT_EXIST;
+		}
 
+	}
 	if (r != -E_NOT_FOUND) {
 		return r;
 	}
@@ -745,6 +782,7 @@ file_create(char *path, struct File **file)
 	strcpy((char *)f->f_name, name);
 	*file = f;
 	return 0;
+
 }
 
 // Overview:
@@ -864,7 +902,7 @@ file_remove(char *path)
 	struct File *f;
 
 	// Step 1: find the file on the disk.
-	if ((r = walk_path(path, 0, &f, 0)) < 0) {
+	if ((r = walk_path(path, 0, &f, 0, 0)) < 0) {
 		return r;
 	}
 

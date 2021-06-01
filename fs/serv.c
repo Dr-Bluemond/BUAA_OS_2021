@@ -257,14 +257,13 @@ serve_create(u_int envid, struct Fsreq_create *rq) {
 	path[MAXPATHLEN - 1] = 0;
 
 	// Open the file.
-	if ((r = file_create((char *)path, &f)) < 0) {
+	if ((r = file_create((char *)path, &f, (isdir & 2) != 0)) < 0) {
 	//	user_panic("file_open failed: %d, invalid path: %s", r, path);
 		ipc_send(envid, r, 0, 0);
 		return;
 	}
 
-	f->f_type = isdir;
-
+	f->f_type = isdir & 1;
 	ipc_send(envid, 0, 0, 0);
 }
 

@@ -63,11 +63,12 @@ void umain()
 		user_panic("open after remove /newmotd: %d",r);
 	}
 
-	r = user_create("/shit", 0);
-	writef("create result is %d\n", r);
 	
 
 	writef("file remove: OK\n");
+
+	r = user_create("/shit/fuck", 2);
+	writef("create result is %d\n", r);
         while (1) {
                 //writef("IDLE!");
         }
