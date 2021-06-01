@@ -1,5 +1,4 @@
 #include "fs.h"
-#include <error.h>
 #include <mmu.h>
 
 struct Super *super;
