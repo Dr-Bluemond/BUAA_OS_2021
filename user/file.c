@@ -20,6 +20,11 @@ struct Dev devfile = {
 	.dev_stat =		file_stat,
 };
 
+int user_create(char* path, int isdir) {
+	
+}
+
+
 
 // Overview:
 //	Open a file (or directory).
@@ -284,4 +289,5 @@ sync(void)
 {
 	return fsipc_sync();
 }
+
 

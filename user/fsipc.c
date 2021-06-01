@@ -6,6 +6,7 @@
 
 extern u_char fsipcbuf[BY2PG];		// page-aligned, declared in entry.S
 
+
 // Overview:
 //	Send an IPC request to the file server, and wait for a reply.
 //
@@ -26,6 +27,23 @@ fsipc(u_int type, void *fsreq, u_int dstva, u_int *perm)
 	// NOTEICE: Our file system no.1 process!
 	ipc_send(envs[1].env_id, type, (u_int)fsreq, PTE_V | PTE_R);
 	return ipc_recv(&whom, dstva, perm);
+}
+
+
+int fsipc_create(char* path, int isdir) {
+	u_int perm;
+	struct Fsreq_create *req;
+
+	req = (struct Fsreq_create *)fsipcbuf;
+
+	// The path is too long.
+	if (strlen(path) >= MAXPATHLEN) {
+		return -E_BAD_PATH;
+	}
+
+	strcpy((char *)req->req_path, path);
+	req->req_isdir = isdir;
+	return fsipc(FSREQ_CREATE, req, 0, &perm);
 }
 
 // Overview:

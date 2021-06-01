@@ -1,4 +1,5 @@
 #include "fs.h"
+#include <error.h>
 #include <mmu.h>
 
 struct Super *super;
@@ -731,7 +732,7 @@ file_create(char *path, struct File **file)
 	}
 
 	if (r != -E_NOT_FOUND || dir == 0) {
-		return r;
+		return -E_DIR_NOT_EXIST;
 	}
 
 	if (dir_alloc_file(dir, &f) < 0) {

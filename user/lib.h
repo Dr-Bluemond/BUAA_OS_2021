@@ -126,6 +126,7 @@ int	read_map(int fd, u_int offset, void **blk);
 int	remove(const char *path);
 int	ftruncate(int fd, u_int size);
 int	sync(void);
+int user_create(char* path, int isdir);
 
 #define user_assert(x)	\
 	do {	if (!(x)) user_panic("assertion failed: %s", #x); } while (0)
