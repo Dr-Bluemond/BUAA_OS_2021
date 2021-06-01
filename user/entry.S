@@ -53,8 +53,6 @@ nop
 .set noreorder
 .text
 .globl __asm_pgfault_handler
-
-.set noat
 __asm_pgfault_handler:
 	// save the caller-save registers
 	//	(your code here)
@@ -107,5 +105,4 @@ nop
 		lw	k0,TF_EPC(sp) 	//atomic operation needed 
 		jr	k0			//
 		lw	sp,TF_REG29(sp)  /* Deallocate stack */  
-.set at
 
