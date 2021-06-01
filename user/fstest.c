@@ -67,18 +67,16 @@ void umain()
 
 	writef("file remove: OK\n");
 
-	r = user_create("/A", 1);
-	writef("a create result is %d\n", r);
-	r = user_create("/A", 1);
-	writef("a create result is %d\n", r);
-	r = user_create("/B", 0);
-	writef("b create result is %d\n", r);
-	r = user_create("/B", 0);
-	writef("b create result is %d\n", r);
+	r = user_create("/A/B", 2);
+	writef("1 create result is %d\n", r);
+	r = user_create("/A/B", 2);
+	writef("1 create result is %d\n", r);
+	r = user_create("B/A/C", 3);
+	writef("2 create result is %d\n", r);
 	r = user_create("/A/B", 1);
-	writef("c create result is %d\n", r);
+	writef("3 create result is %d\n", r);
 	r = user_create("/A", 0);
-	writef("d create result is %d\n", r);
+	writef("4 create result is %d\n", r);
         while (1) {
                 //writef("IDLE!");
         }

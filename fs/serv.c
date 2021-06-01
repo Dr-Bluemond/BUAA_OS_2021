@@ -255,10 +255,9 @@ serve_create(u_int envid, struct Fsreq_create *rq) {
 	// Copy in the path, making sure it's null-terminated
 	user_bcopy(rq->req_path, path, MAXPATHLEN);
 	path[MAXPATHLEN - 1] = 0;
-	writef("foo, %d\n", isdir);
 
 	// Open the file.
-	if ((r = file_create((char *)path, &f, (isdir & 2) != 0, isdir)) < 0) {
+	if ((r = file_create((char *)path, &f, (isdir & 2) != 0, isdir & 1)) < 0) {
 	//	user_panic("file_open failed: %d, invalid path: %s", r, path);
 		ipc_send(envid, r, 0, 0);
 		return;

@@ -750,6 +750,8 @@ file_create(char *path, struct File **file, int recursive, int isdir)
 	if (recursive) {
 		while (1) {
 			r = walk_path(path, &dir, &f, name, fpath, isdir);
+			// writef("fpath: %s, isdir: %d\n", fpath, isdir);
+			// writef("r: %d, isdir: %d\n", r);
 			if (r == 0) {
 				return -E_FILE_EXISTS;
 			}
