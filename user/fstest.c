@@ -67,8 +67,14 @@ void umain()
 
 	writef("file remove: OK\n");
 
-	r = user_create("/shit/fuck", 2);
-	writef("create result is %d\n", r);
+	r = user_create("/shit/fuck", 0);
+	writef("a create result is %d\n", r);
+	r = user_create("/foo/bar", 1);
+	writef("b create result is %d\n", r);
+	r = user_create("/shit/fuck/aaa", 2);
+	writef("c create result is %d\n", r);
+	r = user_create("/foo/bar/bbb", 3);
+	writef("d create result is %d\n", r);
         while (1) {
                 //writef("IDLE!");
         }

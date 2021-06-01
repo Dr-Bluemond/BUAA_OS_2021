@@ -755,7 +755,6 @@ file_create(char *path, struct File **file, int recursive)
 			}
 			if (dir == 0) { // indicates path not found
 				r = file_create(fpath, &f, 0);
-			writef("create result is %d\n", r);
 				f->f_type = 1;
 				continue;
 			}
