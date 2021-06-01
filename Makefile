@@ -53,7 +53,7 @@ debug: all
 submit: clean
 	git add --all
 	git commit -m'submit'
-	git push origin lab5
+	git push origin lab5-2-exam
 	
 
 
