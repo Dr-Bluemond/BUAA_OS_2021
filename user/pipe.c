@@ -85,12 +85,20 @@ _pipeisclosed(struct Fd *fd, struct Pipe *p)
 	// everybody left is what fd is.  So the other end of
 	// the pipe is closed.
 	int pfd,pfp,runs;
-	
 
+	do {
+		runs = env->env_runs;
+		pfd = pageref(fd);
+		pfp = pageref(p);
+	} while (runs != env->env_runs);
 
-
-	user_panic("_pipeisclosed not implemented");
-//	return 0;
+	if (pfd == pfp) {
+		// writef("pfd is %d, pfp is %d\n", pfd, pfp);
+		return 1;
+	} else {
+		return 0;
+	}
+	user_panic("_pipeisclosed reaches end");
 }
 
 int
@@ -117,14 +125,34 @@ piperead(struct Fd *fd, void *vbuf, u_int n, u_int offset)
 	// some bytes, return what you have instead of yielding.)
 	// If the pipe is empty and closed and you didn't copy any data out, return 0.
 	// Use _pipeisclosed to check whether the pipe is closed.
-	int i;
+	int i = 0;
 	struct Pipe *p;
-	char *rbuf;
-	
+	char *rbuf = vbuf;
 
+	p = (struct Pipe *)fd2data(fd);
+	while (1) {
+		if (_pipeisclosed(fd, p)) {
+			return i;
+		}
+		if (p->p_rpos == p->p_wpos) {
+			if (i == 0) {
+				syscall_yield();
+			} else {
+				return i;
+			}
+		}
+		while (p->p_rpos < p->p_wpos) {
+			if (i >= n) {
+				return i;
+			}
+			rbuf[i] = p->p_buf[p->p_rpos % BY2PIPE];
+			i++;
+			p->p_rpos++;
+		}
+	}
 
-	user_panic("piperead not implemented");
-//	return -E_INVAL;
+	user_panic("piperead reaches end");
+	return -E_INVAL;
 }
 
 static int
@@ -139,15 +167,23 @@ pipewrite(struct Fd *fd, const void *vbuf, u_int n, u_int offset)
 	// Use _pipeisclosed to check whether the pipe is closed.
 	int i;
 	struct Pipe *p;
-	char *wbuf;
-	
+	char *wbuf = vbuf;
 
-//	return -E_INVAL;
+	p = (struct Pipe *)fd2data(fd);
+	for (i = 0; i < n; i++) {
+		while (p->p_wpos == p->p_rpos + BY2PIPE) {
+			if (_pipeisclosed(fd, p)) {
+				writef("writing on a closed pipe\n");
+				return 0;
+			}
+			syscall_yield();
+		}
+		p->p_buf[p->p_wpos % BY2PIPE] = wbuf[i];
+		p->p_wpos++;
+	}
 	
-	
-	user_panic("pipewrite not implemented");
-
 	return n;
+	// user_panic("pipewrite not implemented");
 }
 
 static int
@@ -162,6 +198,7 @@ pipestat(struct Fd *fd, struct Stat *stat)
 static int
 pipeclose(struct Fd *fd)
 {
+	syscall_mem_unmap(0, fd);
 	syscall_mem_unmap(0, fd2data(fd));
 	return 0;
 }
